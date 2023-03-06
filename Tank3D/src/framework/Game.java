@@ -9,11 +9,11 @@ import org.jogamp.java3d.Canvas3D;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.vecmath.Point3d;
 
-public class Main extends JFrame {
+public class Game extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	public Main() {
+	public Game() {
 		GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 		Canvas3D canvas = new Canvas3D(config);
 
@@ -27,14 +27,15 @@ public class Main extends JFrame {
 		setLayout(new BorderLayout());
 		add("Center", canvas);
 		this.setSize(800, 800);
+		this.setTitle("Tank3D");
+		this.setVisible(true);
+		this.setSize(900, 600);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setLocationRelativeTo(null);
 		this.setVisible(true);
 	}
 
 	public static void main(String[] args) {
-		Main window = new Main();
-		window.setSize(900, 600);
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		window.setLocationRelativeTo(null);
-		window.setVisible(true);
+		new Game();
 	}
 }
