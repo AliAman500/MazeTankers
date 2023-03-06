@@ -6,11 +6,11 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/2800/lib/j3dcore.jar"/>
-	<classpathentry kind="lib" path="/2800/lib/j3dexamples.jar"/>
-	<classpathentry kind="lib" path="/2800/lib/j3dutils.jar"/>
-	<classpathentry kind="lib" path="/2800/lib/jogamp-fat.jar"/>
-	<classpathentry kind="lib" path="/2800/lib/jogamp-fat-test.jar"/>
-	<classpathentry kind="lib" path="/2800/lib/vecmath.jar"/>
+	<classpathentry kind="lib" path="lib/j3dcore.jar"/>
+	<classpathentry kind="lib" path="lib/j3dexamples.jar"/>
+	<classpathentry kind="lib" path="lib/j3dutils.jar"/>
+	<classpathentry kind="lib" path="lib/jogamp-fat.jar"/>
+	<classpathentry kind="lib" path="lib/jogamp-fat-test.jar"/>
+	<classpathentry kind="lib" path="lib/vecmath.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
