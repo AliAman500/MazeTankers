@@ -21,7 +21,7 @@ public class Client implements Runnable {
 	public Client(Game game) throws Exception {
 		this.game = game;
 		client = new DatagramSocket(9877);
-		clientAddress = InetAddress.getLocalHost();
+		clientAddress = InetAddress.getByName("10.72.93.113");
 		clientPort = client.getPort();
 		serverPort = 9876;
 		serverAddress = InetAddress.getByName("10.72.93.113");
