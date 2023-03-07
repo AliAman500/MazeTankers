@@ -12,7 +12,7 @@ public class Server {
 	private DatagramSocket server;
 	
 	public Server() throws Exception {
-		server = new DatagramSocket(9876, InetAddress.getByName("10.72.93.113"));
+		server = new DatagramSocket(9876, InetAddress.getLocalHost());
 		
 		byte[] dataReceived = new byte[1024];
 		
