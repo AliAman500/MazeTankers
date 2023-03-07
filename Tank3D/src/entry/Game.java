@@ -43,8 +43,8 @@ public class Game extends JFrame {
 	public static void main(String[] args) throws Exception {
 		Game game = new Game();
 		game.thread.start();
-		game.client.sendData(new ConnectPacket("NewUser", game.client.clientAddress, game.client.clientPort));
-		System.out.println("Just sent connection request to server (" + game.client.serverAddress + ":"
+		game.client.sendData(new ConnectPacket(game.client.deviceName, game.client.clientAddress, game.client.clientPort));
+		System.out.println("Sent connection request to server (" + game.client.serverAddress + ":"
 				+ game.client.serverPort + "). Waiting for approval...");
 
 	}
