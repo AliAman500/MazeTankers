@@ -9,22 +9,18 @@ import entry.Game;
 
 public class Client implements Runnable {
 
-	private DatagramSocket client;
+	public DatagramSocket client;
 	
 	public InetAddress serverAddress;
 	public int serverPort;
-	public InetAddress clientAddress;
-	public int clientPort;
 	public Game game;
 	public String deviceName;
 	
 	public Client(Game game) throws Exception {
 		this.game = game;
-		client = new DatagramSocket(9877);
-		clientAddress = InetAddress.getLocalHost();
-		clientPort = client.getPort();
-		serverPort = 9876;
-		serverAddress = InetAddress.getByName("10.172.46.188");
+		client = new DatagramSocket();
+		serverPort = 9888;
+		serverAddress = InetAddress.getByName("192.168.2.35");
 		deviceName = InetAddress.getLocalHost().getHostName();
 	}
 	
@@ -39,20 +35,20 @@ public class Client implements Runnable {
 
 	@Override
 	public void run() {
-		byte[] dataReceived = new byte[1024];
 		
 		while(true) {
+			byte[] dataReceived = new byte[1024];
 			DatagramPacket dataPacket = new DatagramPacket(dataReceived, dataReceived.length);
+			System.out.println("listening...");
 			try {
 				client.receive(dataPacket);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			Packet packet = Packet.parse(dataPacket);
-			
 			switch(packet.id) {
 			case CONNECT:
-				System.out.println("Received approval for connection from server (" + packet.address  + ":" + packet.port + ")");
+				System.out.println("recieved connection approval from server");
 				break;
 			case CREATE_ROOM:
 				break;

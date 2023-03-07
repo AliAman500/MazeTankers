@@ -1,13 +1,10 @@
 package networking;
 
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 
 public class Packet {
 
 	public ID id;
-	public InetAddress address;
-	public int port;
 	
 	public enum ID {
 		CONNECT, CREATE_ROOM, JOIN_ROOM;
@@ -24,7 +21,7 @@ public class Packet {
 		switch(packetID) {
 		case CONNECT:
 			String username = data[1];
-			return new ConnectPacket(username, dataPacket.getAddress(), dataPacket.getPort());
+			return new ConnectPacket(username);
 		case CREATE_ROOM:
 			break;
 		case JOIN_ROOM:

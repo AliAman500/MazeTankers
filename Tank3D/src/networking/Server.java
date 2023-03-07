@@ -12,21 +12,19 @@ public class Server {
 	private DatagramSocket server;
 	
 	public Server() throws Exception {
-		server = new DatagramSocket(9876, InetAddress.getLocalHost());
-		
-		byte[] dataReceived = new byte[1024];
+		server = new DatagramSocket(9888, InetAddress.getByName("192.168.2.35"));
 		
 		while(true) {
+			byte[] dataReceived = new byte[1024];
 			DatagramPacket dataPacket = new DatagramPacket(dataReceived, dataReceived.length);
 			server.receive(dataPacket);
 			Packet packet = Packet.parse(dataPacket);
-			
 			switch(packet.id) {
 			case CONNECT:
 				ConnectPacket connectPacket = (ConnectPacket) packet;
-				System.out.println("Received connection request from client " + connectPacket.username + ".");
-				sendData(connectPacket, connectPacket.address, connectPacket.port);
-				System.out.println("Sent connection approval to client " + connectPacket.username + ".");
+				System.out.println("recieved connection request from client: " + connectPacket.username);
+				sendData(connectPacket, dataPacket.getAddress(), dataPacket.getPort());
+				System.out.println("sent approval to client: " + connectPacket.username);
 				break;
 			case CREATE_ROOM:
 				break;
