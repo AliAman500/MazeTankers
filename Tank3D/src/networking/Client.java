@@ -20,7 +20,7 @@ public class Client implements Runnable {
 		this.game = game;
 		client = new DatagramSocket();
 		serverPort = 9888;
-		serverAddress = InetAddress.getByName("192.168.2.35");
+		serverAddress = InetAddress.getByName("192.168.53.35");
 		deviceName = InetAddress.getLocalHost().getHostName();
 	}
 	
@@ -39,7 +39,6 @@ public class Client implements Runnable {
 		while(true) {
 			byte[] dataReceived = new byte[1024];
 			DatagramPacket dataPacket = new DatagramPacket(dataReceived, dataReceived.length);
-			System.out.println("listening...");
 			try {
 				client.receive(dataPacket);
 			} catch (IOException e) {

@@ -9,6 +9,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
@@ -16,24 +17,32 @@ import javax.swing.UIManager;
 public class Server {
 
 	private DatagramSocket server;
-	private static Font font = new Font("Ariel", Font.PLAIN, 13);
+	private static String address = "";
+	private static int port = 9888;
+	private static Font font = new Font("Consolas", Font.PLAIN, 13);
 	
 	private static JTextArea textArea;
+	private static JLabel label = new JLabel();
+	private static JLabel loading = new JLabel();
+	
+	private static Thread loadingThread;
 	
 	public Server() throws Exception {
-		server = new DatagramSocket(9888);
+		server = new DatagramSocket(port);
+		address = InetAddress.getLocalHost().getHostAddress();
+		label.setText("Server listening on IP: " + address + " Port: " + port);
+		logln("Listening...");
 		while(true) {
 			byte[] dataReceived = new byte[1024];
 			DatagramPacket dataPacket = new DatagramPacket(dataReceived, dataReceived.length);
-			logln("Listening...");
 			server.receive(dataPacket);
 			Packet packet = Packet.parse(dataPacket);
 			switch(packet.id) {
 			case CONNECT:
 				ConnectPacket connectPacket = (ConnectPacket) packet;
-				logln("recieved connection request from client: " + connectPacket.username);
+				logln("recieved connection request from client:- Name: " + connectPacket.username + ", IP: " + dataPacket.getAddress().getHostAddress());
 				sendData(connectPacket, dataPacket.getAddress(), dataPacket.getPort());
-				logln("sent approval to client: " + connectPacket.username);
+				logln("sent approval to client:- Name: " + connectPacket.username + ", IP: " + dataPacket.getAddress().getHostAddress());
 				break;
 			case CREATE_ROOM:
 				break;
@@ -62,6 +71,15 @@ public class Server {
 		Container contentPane = frame.getContentPane();
         contentPane.setLayout(null);
         
+        label.setFont(new Font("Calibri", Font.PLAIN, 14));
+        label.setBounds(new Rectangle(250, 10, 360, 32));
+
+        loading.setFont(new Font("Consolas", Font.BOLD, 12));
+        loading.setBounds(new Rectangle(365, 22, 360, 32));
+        
+        contentPane.add(label, "North");
+        contentPane.add(loading, "North");
+        
         textArea = new JTextArea();
         textArea.setEditable(false);
         textArea.setFont(font);
@@ -76,6 +94,30 @@ public class Server {
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		frame.setResizable(false);
+		
+		loadingThread = new Thread(new Runnable() {
+			public void run() {
+				int waitTime = 300;
+				while (true) {
+					try {
+						loading.setText(".");
+						Thread.sleep(waitTime);
+						loading.setText("..");
+						Thread.sleep(waitTime);
+						loading.setText("...");
+						Thread.sleep(waitTime);
+						loading.setText("....");
+						Thread.sleep(waitTime);
+						Thread.sleep(waitTime);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		
+		loadingThread.start();
+		
 		new Server();
 	}
 	
