@@ -21,7 +21,6 @@ import components.Tank;
 import enums.TankColor;
 import input.Keyboard;
 import input.Mouse;
-import maze.MazeCreation;
 import networking.Client;
 import networking.ConnectPacket;
 import tools.Util;
@@ -33,6 +32,7 @@ public class Game extends JFrame {
 	public Client client;
 	public Thread clientThread;
 	public Thread thread;
+	public static SimpleUniverse simpleUniverse;
 	
 	public static Appearance COLOR_PALETTE;
 	private LinkedList<Entity> entities;
@@ -50,9 +50,10 @@ public class Game extends JFrame {
 
 	private void setupUserMaze(TransformGroup sceneTG) {
 		try {
-            sceneTG.addChild(MazeCreation.createMazeFromImage(MazeCreation.pickRandomMaze()));
+            sceneTG.addChild(Util.createMazeFromImage("res/mazes/maze-big.png"));
         }catch(Exception e) {
             System.err.print(e);
+			System.exit(-1);
         }
 	}
 	
@@ -74,7 +75,7 @@ public class Game extends JFrame {
 		TransformGroup sceneTG = new TransformGroup();
 		BranchGroup staticLightGroup = new BranchGroup();
 
-		Util.addDirectionalLight(staticLightGroup, new Vector3f(0, 0, -1), Util.WHITE);
+		Util.addDirectionalLight(staticLightGroup, new Vector3f(0.4f, -1, -1), Util.WHITE);
 		Tank tank = setupUserTank(sceneTG);
 		setupUserCamera(tank, simpleUniverse);
 		setupUserMaze(sceneTG);
@@ -124,10 +125,12 @@ public class Game extends JFrame {
 		canvas.addKeyListener(new Keyboard());
 		canvas.addMouseListener(new Mouse());
 
-		SimpleUniverse simpleUniverse = new SimpleUniverse(canvas);
-
+		simpleUniverse = new SimpleUniverse(canvas);
+		Util.enableAudio(simpleUniverse);
+		
 		BranchGroup sceneBG = createScene(simpleUniverse);
-
+		sceneBG.addChild(Util.bkgdSound("audio"));
+		
 		sceneBG.compile();
 		simpleUniverse.addBranchGraph(sceneBG);
 
