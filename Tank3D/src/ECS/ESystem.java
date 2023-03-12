@@ -11,6 +11,10 @@ public class ESystem {
         entities = new LinkedList<Entity>();
     }
 
+    public int numEntities() {
+        return entities.size();
+    }
+
     public void removeEntity(TransformGroup sceneTG, Entity e) {
         entities.remove(e);
         sceneTG.removeChild(e.entityTG);

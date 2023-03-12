@@ -1,11 +1,8 @@
 package components;
 
-import java.awt.event.MouseEvent;
-
 import ECS.Component;
 import ECS.ESystem;
 import ECS.Entity;
-import input.Mouse;
 
 public class GunRecoil extends Component {
 
@@ -23,10 +20,6 @@ public class GunRecoil extends Component {
 	}
 
 	public void update(ESystem eSystem) {
-		if(Mouse.isButtonPressed(MouseEvent.BUTTON1) && !playing) {
-			playing = true;
-		}
-		
 		if(playing) {
 			x += 0.45f;
 			tank.gunOffset = 0.5f * (float) Math.cos(x + Math.PI) + 0.5f;
@@ -39,6 +32,6 @@ public class GunRecoil extends Component {
 	}
 	
 	public void playRecoil() {
-		
+		playing = true;
 	}
 }

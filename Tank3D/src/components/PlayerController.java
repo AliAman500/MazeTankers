@@ -1,13 +1,17 @@
 package components;
 
+import java.awt.event.MouseEvent;
+
 import ECS.Component;
 import ECS.ESystem;
 import ECS.Entity;
 import input.Keyboard;
+import input.Mouse;
 import tools.Util;
 
 public class PlayerController extends Component {
 	private Tank tank;
+	private GunRecoil recoil;
 
 	private float velocity = 0;
 	private float speed = 0.17f;
@@ -20,6 +24,7 @@ public class PlayerController extends Component {
 	public PlayerController(Entity parent) {
 		super(parent);
 		this.tank = (Tank) parent.getComponent("Tank");
+		this.recoil = (GunRecoil) parent.getComponent("GunRecoil");
 	}
 
 	public void update(ESystem eSystem) {
@@ -48,7 +53,8 @@ public class PlayerController extends Component {
 
 		tank.direction += rotationVelocity;
 
-//		tank.turretDirection -= 2;
-//		tank.gunOffset = (float) (0.22f * Math.sin(tank.direction * 0.2f));
+		if (Mouse.isButtonPressed(MouseEvent.BUTTON1)) {
+			recoil.playRecoil();
+		}
 	}
 }

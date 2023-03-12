@@ -3,9 +3,7 @@ package components;
 import org.jogamp.java3d.*;
 import org.jogamp.vecmath.Vector3f;
 
-import ECS.Component;
-import ECS.ESystem;
-import ECS.Entity;
+import ECS.*;
 import entry.Game;
 import enums.TankColor;
 import tools.Util;
@@ -70,6 +68,10 @@ public class Tank extends Component {
 
         turretTG.addChild(gunPosTG);
         parent.entityTG.addChild(turretPosTG);
+
+        // add headlight here:
+        // direction of light will always be forward (0, 0, -1)
+        // parent.entityTG.addChild(Util.addSpotLight(...));
     }
 
     public void update(ESystem eSystem) {
