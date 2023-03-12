@@ -1,39 +1,22 @@
 package tools;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.URL;
-
 import javax.imageio.ImageIO;
 
 import org.jdesktop.j3d.examples.sound.BackgroundSoundBehavior;
 import org.jdesktop.j3d.examples.sound.audio.JOALMixer;
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.BackgroundSound;
-import org.jogamp.java3d.BoundingSphere;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.DirectionalLight;
-import org.jogamp.java3d.Material;
-import org.jogamp.java3d.MediaContainer;
-import org.jogamp.java3d.Node;
-import org.jogamp.java3d.PointSound;
-import org.jogamp.java3d.Texture2D;
-import org.jogamp.java3d.TextureAttributes;
-import org.jogamp.java3d.Transform3D;
-import org.jogamp.java3d.TransformGroup;
-import org.jogamp.java3d.loaders.IncorrectFormatException;
-import org.jogamp.java3d.loaders.ParsingErrorException;
-import org.jogamp.java3d.loaders.Scene;
+import org.jogamp.java3d.*;
+import org.jogamp.java3d.loaders.*;
 import org.jogamp.java3d.loaders.objectfile.ObjectFile;
-import org.jogamp.java3d.utils.geometry.Box;
-import org.jogamp.java3d.utils.geometry.Primitive;
 import org.jogamp.java3d.utils.image.TextureLoader;
-import org.jogamp.java3d.utils.universe.SimpleUniverse;
-import org.jogamp.java3d.utils.universe.Viewer;
-import org.jogamp.vecmath.Color3f;
-import org.jogamp.vecmath.Point3d;
-import org.jogamp.vecmath.Vector3f;
+import org.jogamp.java3d.utils.universe.*;
+import org.jogamp.vecmath.*;
+
+import ECS.ESystem;
+import ECS.Entity;
+import entities.Entities;
 
 public class Util {
 	public final static Color3f RED = new Color3f(1.0f, 0.0f, 0.0f);
@@ -47,7 +30,7 @@ public class Util {
 	public final static Color3f GREY = new Color3f(0.35f, 0.35f, 0.35f);
 	public final static Color3f BLACK = new Color3f(0.0f, 0.0f, 0.0f);
 
-	public final static BoundingSphere lightBounds = new BoundingSphere(new Point3d(), 1000.0);
+	public final static BoundingSphere LIGHT_BOUNDS = new BoundingSphere(new Point3d(), 1000.0);
 
 	public static void enableAudio(SimpleUniverse simple_U) {
 		JOALMixer mixer = null; // create a joalmixer
@@ -66,52 +49,50 @@ public class Util {
 		su.getViewer().getPhysicalEnvironment().getAudioDevice().close();
 	}
 
-	public static Node createMazeFromImage(String filepath) throws Exception {
-		TransformGroup mazeTG = new TransformGroup();
+	public static Entity setupMaze(String filepath, TransformGroup sceneTG, ESystem eSystem) throws Exception {
 		BufferedImage img = ImageIO.read(new File(filepath));
+		Entity userTank = null;
+
 		for (int y = 0; y < img.getHeight(); y++) {
 			for (int x = 0; x < img.getWidth(); x++) {
 				int pixel = img.getRGB(x, y);
-				if (pixel != -1) {
-					Transform3D transform = new Transform3D();
-					transform.setTranslation(new Vector3f(x * 1, 0, y * 1));
-					TransformGroup boxTG = new TransformGroup(transform);
-					if (pixel == -16777216) {
-						boxTG.addChild(new Box(0.5f, 2.5f, 0.5f, Primitive.GENERATE_NORMALS, Util.solidAppearance(Util.ORANGE)));
-					} else if (pixel == -65536) {
-						boxTG.addChild(new Box(0.5f, 2.5f, 0.5f, Primitive.GENERATE_NORMALS, Util.solidAppearance(Util.RED)));
-					} else if (pixel == -16711936) {
-						boxTG.addChild(new Box(0.5f, 2.5f, 0.5f, Primitive.GENERATE_NORMALS, Util.solidAppearance(Util.GREEN)));
-					} else if (pixel == -16776961) {
-						boxTG.addChild(new Box(0.5f, 2.5f, 0.5f, Primitive.GENERATE_NORMALS, Util.solidAppearance(Util.BLUE)));
-					}
-					mazeTG.addChild(boxTG);
+
+				int red = (pixel >> 16) & 255;
+                int green = (pixel >> 8) & 255;
+                int blue = pixel & 255;
+
+				if (red == 255 && green == 0 && blue == 0)
+					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, 0, y * 4)));
+
+				if (red == 0 && green == 0 && blue == 0)
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
+
+				if (red == 0 && green == 0 && blue == 255) {
+					eSystem.addEntity(Entities.createNetworkTank(sceneTG, new Vector3f(x * 4, 0, y * 4)));
 				}
 			}
 		}
-		Transform3D scaler = new Transform3D();
-		scaler.setScale(0.5f);
-		mazeTG.setTransform(scaler);
-		return mazeTG;
+
+		return userTank;
 	}
 	
-	public static BackgroundSound bkgdSound(String name) {
-		BackgroundSound bgs = new BackgroundSound();// create a background sound
-		bgs.setInitialGain(1.0f);// lower its volume
-		BackgroundSoundBehavior player = // create the sound behavior
-				new BackgroundSoundBehavior(bgs, locateSound(name));
-				// new BackgroundSoundBehavior(bgs, "src/audio.mp3");
-		player.setSchedulingBounds(lightBounds);// set scheduling bound
+	public static BackgroundSound createBackgroundSound(String filepath) {
+		BackgroundSound bgs = new BackgroundSound();
+		bgs.setContinuousEnable(true);
+		bgs.setInitialGain(0.15f);
+		bgs.setLoop(Sound.INFINITE_LOOPS);
+		BackgroundSoundBehavior player = new BackgroundSoundBehavior(bgs, locateSound(filepath));
+		bgs.setBounds(LIGHT_BOUNDS);
+		player.setBounds(LIGHT_BOUNDS);
 		return bgs;
 	}
 
-	public static URL locateSound(String fn) {
+	public static URL locateSound(String filepath) {
 		URL url = null;
-		String filename = "res/audio/" + fn + ".wav";// specify file location
 		try {// locate the file
-			url = new URL("file", "localhost", filename);
+			url = new URL("file", "localhost", filepath);
 		} catch (Exception e) {
-			System.out.println("Can't open " + filename);
+			System.out.println("Can't open " + filepath);
 		}
 		return url;
 	}
@@ -124,17 +105,18 @@ public class Util {
 		pointSound.setEnable(true);// enable sound
 		pointSound.setInitialGain(1.0f);// set initial gain
 		pointSound.setLoop(-1);// 0: once; -1: loop
-		pointSound.setSchedulingBounds(lightBounds);// set schuduling
+		pointSound.setSchedulingBounds(LIGHT_BOUNDS);// set schuduling
 		return pointSound;
 	}
 	
 	public static Appearance solidAppearance(Color3f color) {		
 		Material mtl = new Material();
+
 		mtl.setShininess(32);
 		mtl.setAmbientColor(WHITE);
 		mtl.setSpecularColor(GREY);
-		mtl.setEmissiveColor(BLACK);
 		mtl.setDiffuseColor(color);
+		mtl.setEmissiveColor(new Color3f(0.2f, 0.2f, 0.2f));
 		mtl.setLightingEnable(true);
 
 		Appearance app = new Appearance();
@@ -144,7 +126,7 @@ public class Util {
 
 	public static void addDirectionalLight(BranchGroup lightGroup, Vector3f direction, Color3f color) {
 		DirectionalLight directionalLight = new DirectionalLight(color, direction);
-		directionalLight.setInfluencingBounds(lightBounds);
+		directionalLight.setInfluencingBounds(LIGHT_BOUNDS);
 		lightGroup.addChild(directionalLight);
 	}
 

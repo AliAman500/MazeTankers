@@ -1,7 +1,5 @@
 package ECS;
 
-import java.util.LinkedList;
-
 public abstract class Component {
     protected Entity parent;
 
@@ -9,5 +7,5 @@ public abstract class Component {
         this.parent = parent;
     }
     
-    public abstract void update(LinkedList<Entity> entities);
+    public abstract void update(ESystem eSystem);
 }

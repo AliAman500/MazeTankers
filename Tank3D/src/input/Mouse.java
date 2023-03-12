@@ -18,7 +18,7 @@ public class Mouse implements MouseListener {
 	public static Vector2f position2D = new Vector2f();
 	
 	public void mouseClicked(MouseEvent e) {
-
+		
 	}
 
 	public void mousePressed(MouseEvent e) {

@@ -5,19 +5,15 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-import entry.Game;
-
 public class Client implements Runnable {
 
 	public DatagramSocket client;
 	
 	public InetAddress serverAddress;
 	public int serverPort;
-	public Game game;
 	public String deviceName;
 	
-	public Client(Game game) throws Exception {
-		this.game = game;
+	public Client() throws Exception {
 		client = new DatagramSocket();
 		serverPort = 9888;
 		serverAddress = InetAddress.getByName("192.168.53.35");

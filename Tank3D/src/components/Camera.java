@@ -1,12 +1,11 @@
 package components;
 
-import java.util.LinkedList;
-
 import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.vecmath.*;
 
 import ECS.Component;
+import ECS.ESystem;
 import ECS.Entity;
 
 public class Camera extends Component {
@@ -36,7 +35,7 @@ public class Camera extends Component {
         parent.entityTG = simpleUniverse.getViewingPlatform().getViewPlatformTransform();
     }
 
-    public void update(LinkedList<Entity> entities) {
+    public void update(ESystem eSystem) {
         simpleUniverse.getViewer().getView().setFieldOfView(Math.toRadians(FOV));
 
         positionTransform.setTranslation(position);

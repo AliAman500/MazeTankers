@@ -40,8 +40,8 @@ public class Entity {
         entityTG.setTransform(entityTransform);
     }
 
-    public void update(LinkedList<Entity> entities) {
+    public void update(ESystem eSystem) {
         for (Map.Entry<String, Component> entry : components.entrySet())
-            entry.getValue().update(entities);
+            entry.getValue().update(eSystem);
     }
 }

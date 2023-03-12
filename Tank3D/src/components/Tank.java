@@ -1,11 +1,10 @@
 package components;
 
-import java.util.LinkedList;
-
 import org.jogamp.java3d.*;
 import org.jogamp.vecmath.Vector3f;
 
 import ECS.Component;
+import ECS.ESystem;
 import ECS.Entity;
 import entry.Game;
 import enums.TankColor;
@@ -73,7 +72,7 @@ public class Tank extends Component {
         parent.entityTG.addChild(turretPosTG);
     }
 
-    public void update(LinkedList<Entity> entities) {
+    public void update(ESystem eSystem) {
         bodyPositionTransform.setTranslation(position);
         bodyRotTransform.rotY(Math.toRadians(direction));
         parent.entityTransform.mul(bodyPositionTransform, bodyRotTransform);

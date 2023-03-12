@@ -2,9 +2,9 @@ package entry;
 
 import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
-import java.util.LinkedList;
 
 import javax.swing.JFrame;
+import javax.swing.UIManager;
 
 import org.jogamp.java3d.Appearance;
 import org.jogamp.java3d.BranchGroup;
@@ -13,89 +13,72 @@ import org.jogamp.java3d.TransformGroup;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.vecmath.Vector3f;
 
+import ECS.ESystem;
 import ECS.Entity;
-import components.Camera;
-import components.CameraController;
-import components.PlayerController;
 import components.Tank;
-import enums.TankColor;
+import entities.Entities;
 import input.Keyboard;
 import input.Mouse;
 import networking.Client;
-import networking.ConnectPacket;
 import tools.Util;
 
 public class Game extends JFrame {
-	
 	private static final long serialVersionUID = 1L;
 
-	public Client client;
-	public Thread clientThread;
+	public static Client client;
+
+	public static Thread clientThread;
 	public Thread thread;
+
+	public static Thread uiThread;
+
+	private ESystem eSystem;
+
 	public static SimpleUniverse simpleUniverse;
-	
 	public static Appearance COLOR_PALETTE;
-	private LinkedList<Entity> entities;
 
-	private Tank setupUserTank(TransformGroup sceneTG) {
-		Entity e = new Entity(sceneTG);
+	private Entity setupUserMaze(TransformGroup sceneTG) {
+		Entity userTank = null;
 
-		Tank tank = (Tank) e.addComponent(new Tank(new Vector3f(0, 0, 0), TankColor.RED, e));
-		
-		e.addComponent(new PlayerController(e));
-
-		entities.add(e);
-		return tank;
-	}
-
-	private void setupUserMaze(TransformGroup sceneTG) {
 		try {
-            sceneTG.addChild(Util.createMazeFromImage("res/mazes/maze-big.png"));
-        }catch(Exception e) {
-            System.err.print(e);
+			userTank = Util.setupMaze("res/mazes/maze-3.png", sceneTG, eSystem);
+		} catch (Exception e) {
+			System.err.print(e);
 			System.exit(-1);
-        }
-	}
-	
-	private void setupUserCamera(Tank tank, SimpleUniverse simpleUniverse) {
-		Entity e = new Entity();
-			
-		e.addComponent(new Camera(new Vector3f(0, 35, 35), new Vector3f(), 45, simpleUniverse, e));
-		e.addComponent(new CameraController(tank, e));
+		}
 
-		entities.add(e);
+		return userTank;
 	}
 
 	public BranchGroup createScene(SimpleUniverse simpleUniverse) {
 		COLOR_PALETTE = Util.texturedAppearance("res/textures/color-palette.png");
+		eSystem = new ESystem();
 
-		entities = new LinkedList<Entity>();
-		
 		BranchGroup sceneBG = new BranchGroup();
 		TransformGroup sceneTG = new TransformGroup();
 		BranchGroup staticLightGroup = new BranchGroup();
 
 		Util.addDirectionalLight(staticLightGroup, new Vector3f(0.4f, -1, -1), Util.WHITE);
-		Tank tank = setupUserTank(sceneTG);
-		setupUserCamera(tank, simpleUniverse);
-		setupUserMaze(sceneTG);
+
+		Entity userTank = setupUserMaze(sceneTG);
+
+		eSystem.addEntity(Entities.createCamera(simpleUniverse, (Tank) userTank.getComponent("Tank")));
+		eSystem.addEntity(Entities.createFloor(sceneTG));
+
 		sceneBG.addChild(staticLightGroup);
 		sceneBG.addChild(sceneTG);
 
-		return (sceneBG);
+		return sceneBG;
 	}
 
 	public void gameLogic() {
-		for (int i = 0; i < entities.size(); i++)
-			entities.get(i).update(entities);
+		eSystem.update();
 
 		Mouse.update(this);
 		Keyboard.update();
 	}
 
 	public Game() throws Exception {
-		client = new Client(this);
-		clientThread = new Thread(client);
 
 		thread = new Thread(new Runnable() {
 			public void run() {
@@ -127,10 +110,10 @@ public class Game extends JFrame {
 
 		simpleUniverse = new SimpleUniverse(canvas);
 		Util.enableAudio(simpleUniverse);
-		
+
 		BranchGroup sceneBG = createScene(simpleUniverse);
-		sceneBG.addChild(Util.bkgdSound("audio"));
-		
+		sceneBG.addChild(Util.createBackgroundSound("res/audio/turkey-in-the-straw.wav"));
+
 		sceneBG.compile();
 		simpleUniverse.addBranchGraph(sceneBG);
 
@@ -144,10 +127,31 @@ public class Game extends JFrame {
 		this.setLocationRelativeTo(null);
 	}
 
-	public static void main(String[] args) throws Exception {
-		Game game = new Game();
+	public static void startGame() {
+		Game game = null;
+		try {
+			game = new Game();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		game.thread.start();
-		game.clientThread.start();
-		game.client.sendData(new ConnectPacket(game.client.deviceName));
+	}
+
+	public static void main(String[] args) throws Exception {
+		client = new Client();
+		clientThread = new Thread(client);
+		clientThread.start();
+		
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		uiThread = new Thread(new Runnable() {
+			public void run() {
+				new Menu();
+			}
+		});
+		uiThread.start();
 	}
 }

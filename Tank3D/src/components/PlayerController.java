@@ -1,8 +1,7 @@
 package components;
 
-import java.util.LinkedList;
-
 import ECS.Component;
+import ECS.ESystem;
 import ECS.Entity;
 import input.Keyboard;
 import tools.Util;
@@ -23,7 +22,7 @@ public class PlayerController extends Component {
 		this.tank = (Tank) parent.getComponent("Tank");
 	}
 
-	public void update(LinkedList<Entity> entities) {
+	public void update(ESystem eSystem) {
 		tank.position.x += velocity * Math.cos(Math.toRadians(tank.direction + 90));
 		tank.position.z -= velocity * Math.sin(Math.toRadians(tank.direction + 90));
 
