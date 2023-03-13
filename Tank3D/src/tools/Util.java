@@ -86,7 +86,7 @@ public class Util {
 					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
 				
 				if(red == 255 && green == 0 && blue == 0 && Game.user == null) {
-					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, 0, y * 4), TankColor.RED));
+					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, 0, y * 4), TankColor.ORANGE));
 				}
 				
 				if (red == 255 && green == 106 && blue == 0) {
@@ -100,7 +100,7 @@ public class Util {
 			for(int i = 0; i < Game.room.users.size(); i++) {
 				User currentUser = Game.room.users.get(i);
 				if(Game.user.equals(currentUser)) {
-					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, Game.user.position, TankColor.RED));
+					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, Game.user.position, TankColor.ORANGE));
 				} else {
 					eSystem.addEntity(Entities.createNetworkTank(sceneTG, currentUser.position, currentUser.username, TankColor.BLUE));
 				}
