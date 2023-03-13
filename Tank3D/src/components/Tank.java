@@ -44,13 +44,13 @@ public class Tank extends Component {
         BranchGroup gunBG = Util.load3DModel("res/models/" + colorStr + "-tank/gun.obj");
 
         Shape3D bodyShape = (Shape3D) bodyBG.getChild(0);
-        bodyShape.setAppearance(Game.COLOR_PALETTE);
+        bodyShape.setAppearance(Util.createAppearance(Util.WHITE, Util.GREY, 32, Game.COLOR_PALETTE));
 
         Shape3D turretShape = (Shape3D) turretBG.getChild(0);
-        turretShape.setAppearance(Game.COLOR_PALETTE);
+        turretShape.setAppearance(Util.createAppearance(Util.WHITE, Util.GREY, 32, Game.COLOR_PALETTE));
 
         Shape3D gunShape = (Shape3D) gunBG.getChild(0);
-        gunShape.setAppearance(Game.COLOR_PALETTE);
+        gunShape.setAppearance(Util.createAppearance(Util.WHITE, Util.GREY, 32, Game.COLOR_PALETTE));
 
         parent.entityTG.addChild(bodyBG);
 
@@ -71,7 +71,9 @@ public class Tank extends Component {
 
         // add headlight here:
         // direction of light will always be forward (0, 0, -1)
-        // parent.entityTG.addChild(Util.addSpotLight(...));
+        // SpotLight headlight = new SpotLight(Util.WHITE, new Point3f(0, 0, -2), new Point3f(1, 0.1f, 0), new Vector3f(0, 0, -1), 45, 1);
+        // headlight.setInfluencingBounds(Util.LIGHT_BOUNDS);
+        // parent.entityTG.addChild(headlight);
     }
 
     public void update(ESystem eSystem) {

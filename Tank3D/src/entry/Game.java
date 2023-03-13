@@ -1,15 +1,9 @@
 package entry;
 
-import java.awt.BorderLayout;
-import java.awt.GraphicsConfiguration;
-
+import java.awt.*;
 import javax.swing.JFrame;
-import javax.swing.UIManager;
 
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.Canvas3D;
-import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.*;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.vecmath.Vector3f;
 
@@ -17,10 +11,9 @@ import ECS.ESystem;
 import ECS.Entity;
 import components.Tank;
 import entities.Entities;
-import input.Keyboard;
-import input.Mouse;
-import networking.Client;
-import tools.Util;
+import input.*;
+import networking.*;
+import tools.*;
 
 public class Game extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -35,13 +28,17 @@ public class Game extends JFrame {
 	private ESystem eSystem;
 
 	public static SimpleUniverse simpleUniverse;
-	public static Appearance COLOR_PALETTE;
+	public static TextureData COLOR_PALETTE;
 
+	public static Room room;
+	public static User user;
+	public static String mazePNG = "res/mazes/maze-" + 3 + ".png";
+	
 	private Entity setupUserMaze(TransformGroup sceneTG) {
 		Entity userTank = null;
 
 		try {
-			userTank = Util.setupMaze("res/mazes/maze-3.png", sceneTG, eSystem);
+			userTank = Util.setupMaze(mazePNG, sceneTG, eSystem);
 		} catch (Exception e) {
 			System.err.print(e);
 			System.exit(-1);
@@ -51,7 +48,7 @@ public class Game extends JFrame {
 	}
 
 	public BranchGroup createScene(SimpleUniverse simpleUniverse) {
-		COLOR_PALETTE = Util.texturedAppearance("res/textures/color-palette.png");
+		COLOR_PALETTE = Util.loadTexture("res/textures/color-palette.png");
 		eSystem = new ESystem();
 
 		BranchGroup sceneBG = new BranchGroup();
@@ -142,11 +139,6 @@ public class Game extends JFrame {
 		clientThread = new Thread(client);
 		clientThread.start();
 		
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		uiThread = new Thread(new Runnable() {
 			public void run() {
 				new Menu();

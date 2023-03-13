@@ -1,12 +1,9 @@
 package components;
 
-import ECS.Component;
-import ECS.ESystem;
-import ECS.Entity;
+import ECS.*;
 
 public class GunRecoil extends Component {
-
-	public float speed = 1f;
+	public float speed = 0.6f;
 	
 	private float x = 0;
 	private boolean playing = false;
@@ -21,7 +18,7 @@ public class GunRecoil extends Component {
 
 	public void update(ESystem eSystem) {
 		if(playing) {
-			x += 0.45f;
+			x += speed;
 			tank.gunOffset = 0.5f * (float) Math.cos(x + Math.PI) + 0.5f;
 			if(x >= 2 * Math.PI) {
 				tank.gunOffset = 0;

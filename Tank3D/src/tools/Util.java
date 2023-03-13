@@ -108,21 +108,27 @@ public class Util {
 		pointSound.setSchedulingBounds(LIGHT_BOUNDS);// set schuduling
 		return pointSound;
 	}
-	
-	public static Appearance solidAppearance(Color3f color) {		
+
+	public static Appearance createAppearance(Color3f diffuse, Color3f specular, float shininess, TextureData texData) {
 		Material mtl = new Material();
 
-		mtl.setShininess(32);
+		mtl.setShininess(shininess);
 		mtl.setAmbientColor(WHITE);
-		mtl.setSpecularColor(GREY);
-		mtl.setDiffuseColor(color);
+		mtl.setDiffuseColor(diffuse);
+		mtl.setSpecularColor(specular);
 		mtl.setEmissiveColor(new Color3f(0.2f, 0.2f, 0.2f));
 		mtl.setLightingEnable(true);
 
-		Appearance app = new Appearance();
-		app.setMaterial(mtl);
-		return app;
-	}	
+		Appearance appearance = new Appearance();
+		appearance.setMaterial(mtl);
+
+		if (texData != null) {
+			appearance.setTexture(texData.texture);
+			appearance.setTextureAttributes(texData.texAttr);
+		}
+
+		return appearance;
+	}
 
 	public static void addDirectionalLight(BranchGroup lightGroup, Vector3f direction, Color3f color) {
 		DirectionalLight directionalLight = new DirectionalLight(color, direction);
@@ -130,18 +136,16 @@ public class Util {
 		lightGroup.addChild(directionalLight);
 	}
 
-	public static Appearance texturedAppearance(String filepath) {
-		TextureLoader loader = new TextureLoader(filepath, null);
-		Texture2D texture = (Texture2D) loader.getTexture();
-		Appearance appearance = solidAppearance(WHITE);
-
-		TextureAttributes texAttr = new TextureAttributes();
-        texAttr.setTextureMode(TextureAttributes.MODULATE);
+	public static TextureData loadTexture(String filepath) {
+		TextureData data = new TextureData();
 		
-		appearance.setTexture(texture);
-		appearance.setTextureAttributes(texAttr);
+		TextureLoader loader = new TextureLoader(filepath, null);
+		data.texture = (Texture2D) loader.getTexture();
+		data.texAttr = new TextureAttributes();
 
-		return appearance;
+        data.texAttr.setTextureMode(TextureAttributes.MODULATE);
+
+		return data;
 	}
 
 	public static float lerp(float start, float end, float t) {

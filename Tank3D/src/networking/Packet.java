@@ -1,13 +1,14 @@
 package networking;
 
 import java.net.DatagramPacket;
+import java.util.LinkedList;
 
 public class Packet {
 
 	public ID id;
 	
 	public enum ID {
-		CONNECT, CREATE_ROOM, JOIN_ROOM;
+		PLAY_REQUEST, CREATE_ROOM, JOIN_ROOM, RUN_GAME;
 	}
 	
 	public static Packet parse(DatagramPacket dataPacket) {
@@ -18,14 +19,26 @@ public class Packet {
 		String data[] = dataString.split(" ");
 		
 		ID packetID = ID.valueOf(data[0]);
+		LinkedList<User> users;
 		switch(packetID) {
-		case CONNECT:
+		case PLAY_REQUEST:
 			String username = data[1];
-			return new ConnectPacket(username);
+			return new PlayReqPacket(username);
 		case CREATE_ROOM:
-			break;
+			User user = new User(data[1], data[2], Integer.parseInt(data[3]));
+			return new RoomPacket(ID.CREATE_ROOM, user);
 		case JOIN_ROOM:
-			break;
+			users = new LinkedList<User>();
+			for(int i = 1; i < data.length; i += 3) {
+				users.add(new User(data[i], data[i+1], Integer.parseInt(data[i+2])));
+			}
+			return new RoomPacket(ID.JOIN_ROOM, users);
+		case RUN_GAME:
+			users = new LinkedList<User>();
+			for(int i = 2; i < data.length; i += 3) {
+				users.add(new User(data[i], data[i+1], Integer.parseInt(data[i+2])));
+			}
+			return new RunGamePacket(ID.RUN_GAME, users, data[1]);
 		default:
 			break;
 		}

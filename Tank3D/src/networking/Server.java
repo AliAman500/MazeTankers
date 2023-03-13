@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.UIManager;
+
+import networking.Packet.ID;
 
 public class Server {
 
@@ -27,6 +30,8 @@ public class Server {
 	
 	private static Thread loadingThread;
 	
+	public static LinkedList<Room> rooms = new LinkedList<Room>();
+	
 	public Server() throws Exception {
 		server = new DatagramSocket(port);
 		address = InetAddress.getLocalHost().getHostAddress();
@@ -38,15 +43,48 @@ public class Server {
 			server.receive(dataPacket);
 			Packet packet = Packet.parse(dataPacket);
 			switch(packet.id) {
-			case CONNECT:
-				ConnectPacket connectPacket = (ConnectPacket) packet;
-				logln("recieved connection request from client:- Name: " + connectPacket.username + ", IP: " + dataPacket.getAddress().getHostAddress());
-				sendData(connectPacket, dataPacket.getAddress(), dataPacket.getPort());
-				logln("sent approval to client:- Name: " + connectPacket.username + ", IP: " + dataPacket.getAddress().getHostAddress());
+			case PLAY_REQUEST:
+				PlayReqPacket pPacket = (PlayReqPacket) packet;
+				logln("recieved play request from client:- " + pPacket.username + " " + dataPacket.getAddress().getHostAddress() + " " + dataPacket.getPort());
+
+				if(rooms.isEmpty()) {
+					Room room = new Room();
+					User user = new User(pPacket.username, dataPacket.getAddress().getHostAddress(), dataPacket.getPort());
+					room.addUser(user);
+					RoomPacket rPacket = new RoomPacket(ID.CREATE_ROOM, room);
+					sendData(rPacket, dataPacket.getAddress(), dataPacket.getPort());
+					logln("sent room creation approval to client:- " + user);
+					rooms.add(room);
+				} else {
+					Room room = rooms.get(0);
+					User user = new User(pPacket.username, dataPacket.getAddress().getHostAddress(), dataPacket.getPort());
+					room.addUser(user);
+					RoomPacket rPacket = new RoomPacket(ID.JOIN_ROOM, room);
+					sendData(rPacket, user);
+					logln("sent room join approval to client:- " + user);
+					
+					for(int i = 0; i < room.users.size(); i++) {
+						User currentUser = room.users.get(i);
+						if(!currentUser.equals(user)) {
+							sendData(rPacket, currentUser);
+							logln("sent room join approval to client:- " + currentUser);
+						}
+					}
+					
+				}
+				
 				break;
 			case CREATE_ROOM:
 				break;
 			case JOIN_ROOM:
+				break;
+			case RUN_GAME:
+				RunGamePacket runPacket = (RunGamePacket) packet;
+				for(int i = 0; i < runPacket.users.size(); i++) {
+					User currentUser = runPacket.users.get(i);
+					sendData(runPacket, currentUser);
+					logln("sent game start approval to client:- " + currentUser);
+				}
 				break;
 			default:
 				break;
@@ -57,6 +95,15 @@ public class Server {
 	public void sendData(Packet packet, InetAddress address, int port) {
 		DatagramPacket dataPacket = new DatagramPacket(packet.getData(), packet.length(), address, port);
 		try {
+			server.send(dataPacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void sendData(Packet packet, User user) {
+		try {
+			DatagramPacket dataPacket = new DatagramPacket(packet.getData(), packet.length(), InetAddress.getByName(user.ipAddress), user.port);
 			server.send(dataPacket);
 		} catch (IOException e) {
 			e.printStackTrace();

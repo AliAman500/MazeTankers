@@ -16,7 +16,7 @@ public class Block extends Component {
         
         BranchGroup blockBG = Util.load3DModel("res/models/maze-stuff/block.obj");
         Shape3D blockShape = (Shape3D) blockBG.getChild(0);
-        blockShape.setAppearance(Game.COLOR_PALETTE);
+        blockShape.setAppearance(Util.createAppearance(Util.WHITE, Util.BLACK, 0, Game.COLOR_PALETTE));
 
         parent.entityTG.addChild(blockBG);
         parent.entityTransform.setTranslation(position);
