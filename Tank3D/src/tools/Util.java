@@ -1,22 +1,43 @@
 package tools;
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
+
 import javax.imageio.ImageIO;
 
 import org.jdesktop.j3d.examples.sound.BackgroundSoundBehavior;
 import org.jdesktop.j3d.examples.sound.audio.JOALMixer;
-import org.jogamp.java3d.*;
-import org.jogamp.java3d.loaders.*;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.BackgroundSound;
+import org.jogamp.java3d.BoundingSphere;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.DirectionalLight;
+import org.jogamp.java3d.Material;
+import org.jogamp.java3d.MediaContainer;
+import org.jogamp.java3d.PointSound;
+import org.jogamp.java3d.Sound;
+import org.jogamp.java3d.Texture2D;
+import org.jogamp.java3d.TextureAttributes;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.loaders.IncorrectFormatException;
+import org.jogamp.java3d.loaders.ParsingErrorException;
+import org.jogamp.java3d.loaders.Scene;
 import org.jogamp.java3d.loaders.objectfile.ObjectFile;
 import org.jogamp.java3d.utils.image.TextureLoader;
-import org.jogamp.java3d.utils.universe.*;
-import org.jogamp.vecmath.*;
+import org.jogamp.java3d.utils.universe.SimpleUniverse;
+import org.jogamp.java3d.utils.universe.Viewer;
+import org.jogamp.vecmath.Color3f;
+import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Vector3f;
 
 import ECS.ESystem;
 import ECS.Entity;
 import entities.Entities;
+import entry.Game;
+import enums.TankColor;
+import networking.User;
 
 public class Util {
 	public final static Color3f RED = new Color3f(1.0f, 0.0f, 0.0f);
@@ -30,7 +51,7 @@ public class Util {
 	public final static Color3f GREY = new Color3f(0.35f, 0.35f, 0.35f);
 	public final static Color3f BLACK = new Color3f(0.0f, 0.0f, 0.0f);
 
-	public final static BoundingSphere LIGHT_BOUNDS = new BoundingSphere(new Point3d(), 1000.0);
+	public final static BoundingSphere LIGHT_BOUNDS = new BoundingSphere(new Point3d(), 10000.0);
 
 	public static void enableAudio(SimpleUniverse simple_U) {
 		JOALMixer mixer = null; // create a joalmixer
@@ -61,18 +82,31 @@ public class Util {
                 int green = (pixel >> 8) & 255;
                 int blue = pixel & 255;
 
-				if (red == 255 && green == 0 && blue == 0)
-					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, 0, y * 4)));
-
 				if (red == 0 && green == 0 && blue == 0)
 					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
-
-				if (red == 0 && green == 0 && blue == 255) {
-					eSystem.addEntity(Entities.createNetworkTank(sceneTG, new Vector3f(x * 4, 0, y * 4)));
+				
+				if(red == 255 && green == 0 && blue == 0 && Game.user == null) {
+					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, 0, y * 4), TankColor.RED));
+				}
+				
+				if (red == 255 && green == 106 && blue == 0) {
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4)));
 				}
 			}
 		}
-
+		
+		if(Game.room != null) {
+			for(int i = 0; i < Game.room.users.size(); i++) {
+				User currentUser = Game.room.users.get(i);
+				if(Game.user.equals(currentUser)) {
+					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, Game.user.position, TankColor.RED));
+				} else {
+					eSystem.addEntity(Entities.createNetworkTank(sceneTG, currentUser.position, currentUser.username, TankColor.BLUE));
+				}
+			}
+		}
+		
 		return userTank;
 	}
 	
@@ -109,14 +143,14 @@ public class Util {
 		return pointSound;
 	}
 
-	public static Appearance createAppearance(Color3f diffuse, Color3f specular, float shininess, TextureData texData) {
+	public static Appearance createAppearance(Color3f diffuse, Color3f specular, Color3f emmissive, float shininess, TextureData texData) {
 		Material mtl = new Material();
 
 		mtl.setShininess(shininess);
 		mtl.setAmbientColor(WHITE);
 		mtl.setDiffuseColor(diffuse);
 		mtl.setSpecularColor(specular);
-		mtl.setEmissiveColor(new Color3f(0.2f, 0.2f, 0.2f));
+		mtl.setEmissiveColor(emmissive);
 		mtl.setLightingEnable(true);
 
 		Appearance appearance = new Appearance();

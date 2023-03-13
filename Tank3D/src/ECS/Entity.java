@@ -40,8 +40,8 @@ public class Entity {
         entityTG.setTransform(entityTransform);
     }
 
-    public void update(ESystem eSystem) {
+    public void update() {
         for (Map.Entry<String, Component> entry : components.entrySet())
-            entry.getValue().update(eSystem);
+            entry.getValue().update();
     }
 }

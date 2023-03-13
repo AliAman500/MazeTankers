@@ -1,20 +1,42 @@
 package components;
 
 import ECS.Component;
-import ECS.ESystem;
 import ECS.Entity;
+import input.Keyboard;
+import networking.PositionPacket;
+import tools.Util;
 
 public class NetworkTank extends Component {
-    private Tank tank;
-    private GunRecoil recoil;
 
-    public NetworkTank(Entity parent) {
-        super(parent);
-        tank = (Tank) parent.getComponent("Tank");
-        recoil = (GunRecoil) parent.getComponent("GunRecoil");
-    }
+	private Tank tank;
+	private GunRecoil recoil;
+	public String username;
+	public PositionPacket posPacket;
 
-    public void update(ESystem eSystem) {
-        // control tank:
-    }
+	private float velocity = 0;
+	private float speed = 0.17f;
+	private float smoothness = 0.2f;
+
+	public NetworkTank(Entity parent, String username) {
+		super(parent);
+		tank = (Tank) parent.getComponent("Tank");
+		recoil = (GunRecoil) parent.getComponent("GunRecoil");
+		this.username = username;
+	}
+
+	public void update() {
+		// control tank:
+		if (posPacket != null) {
+			if (posPacket.forwards)
+				velocity = Util.lerp(velocity, speed, smoothness);
+			else if (posPacket.backwards)
+				velocity = Util.lerp(velocity, -speed, smoothness);
+			else
+				velocity = Util.lerp(velocity, 0, smoothness);
+
+			tank.direction = posPacket.direction;
+			tank.position.x += velocity * Math.cos(Math.toRadians(tank.direction + 90));
+			tank.position.z -= velocity * Math.sin(Math.toRadians(tank.direction + 90));
+		}
+	}
 }

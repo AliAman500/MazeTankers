@@ -2,10 +2,10 @@ package components;
 
 import org.jogamp.java3d.BranchGroup;
 import org.jogamp.java3d.Shape3D;
+import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3f;
 
 import ECS.Component;
-import ECS.ESystem;
 import ECS.Entity;
 import entry.Game;
 import tools.Util;
@@ -16,7 +16,7 @@ public class Block extends Component {
         
         BranchGroup blockBG = Util.load3DModel("res/models/maze-stuff/block.obj");
         Shape3D blockShape = (Shape3D) blockBG.getChild(0);
-        blockShape.setAppearance(Util.createAppearance(Util.WHITE, Util.BLACK, 0, Game.COLOR_PALETTE));
+        blockShape.setAppearance(Util.createAppearance(Util.WHITE, Util.BLACK, new Color3f(0.2f, 0.2f, 0.2f), 0, Game.COLOR_PALETTE));
 
         parent.entityTG.addChild(blockBG);
         parent.entityTransform.setTranslation(position);
@@ -24,6 +24,6 @@ public class Block extends Component {
         parent.superUpdate();
     }
 
-    public void update(ESystem eSystem) {
+    public void update() {
     }
 }

@@ -16,7 +16,7 @@ public class GunRecoil extends Component {
 		tank = (Tank) parent.getComponent("Tank");
 	}
 
-	public void update(ESystem eSystem) {
+	public void update() {
 		if(playing) {
 			x += speed;
 			tank.gunOffset = 0.5f * (float) Math.cos(x + Math.PI) + 0.5f;

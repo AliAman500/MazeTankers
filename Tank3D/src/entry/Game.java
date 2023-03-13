@@ -25,8 +25,8 @@ public class Game extends JFrame {
 
 	public static Thread uiThread;
 
-	private ESystem eSystem;
-
+	public static ESystem eSystem = new ESystem();
+	
 	public static SimpleUniverse simpleUniverse;
 	public static TextureData COLOR_PALETTE;
 
@@ -49,7 +49,6 @@ public class Game extends JFrame {
 
 	public BranchGroup createScene(SimpleUniverse simpleUniverse) {
 		COLOR_PALETTE = Util.loadTexture("res/textures/color-palette.png");
-		eSystem = new ESystem();
 
 		BranchGroup sceneBG = new BranchGroup();
 		TransformGroup sceneTG = new TransformGroup();

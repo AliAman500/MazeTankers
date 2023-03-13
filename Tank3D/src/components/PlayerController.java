@@ -3,10 +3,11 @@ package components;
 import java.awt.event.MouseEvent;
 
 import ECS.Component;
-import ECS.ESystem;
 import ECS.Entity;
+import entry.Game;
 import input.Keyboard;
 import input.Mouse;
+import networking.PositionPacket;
 import tools.Util;
 
 public class PlayerController extends Component {
@@ -21,16 +22,22 @@ public class PlayerController extends Component {
 	private float rotationVelocity = 0;
 	private float rotationSpeed = 5;
 
+	private boolean forwards = false;
+	private boolean backwards = false;
+	
 	public PlayerController(Entity parent) {
 		super(parent);
 		this.tank = (Tank) parent.getComponent("Tank");
 		this.recoil = (GunRecoil) parent.getComponent("GunRecoil");
 	}
 
-	public void update(ESystem eSystem) {
+	public void update() {
 		tank.position.x += velocity * Math.cos(Math.toRadians(tank.direction + 90));
 		tank.position.z -= velocity * Math.sin(Math.toRadians(tank.direction + 90));
 
+		forwards = Keyboard.isUp();
+		backwards = Keyboard.isDown();
+		
 		if (Keyboard.isUp())
 			velocity = Util.lerp(velocity, speed, smoothness);
 		else if (Keyboard.isDown())
@@ -55,6 +62,11 @@ public class PlayerController extends Component {
 
 		if (Mouse.isButtonPressed(MouseEvent.BUTTON1)) {
 			recoil.playRecoil();
+		}
+
+		if(Game.room != null) {
+			PositionPacket posPacket = new PositionPacket(Game.user.username, forwards, backwards, tank.direction, Game.room);
+			Game.client.sendData(posPacket);
 		}
 	}
 }

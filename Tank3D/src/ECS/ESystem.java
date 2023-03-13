@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import org.jogamp.java3d.TransformGroup;
 
 public class ESystem {
+	
     private LinkedList<Entity> entities;
 
     public ESystem() {
@@ -31,6 +32,6 @@ public class ESystem {
 
     public void update() {
         for (int i = 0; i < entities.size(); i++)
-			entities.get(i).update(this);
+			entities.get(i).update();
     }
 }

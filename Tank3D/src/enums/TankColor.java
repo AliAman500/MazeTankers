@@ -2,5 +2,12 @@ package enums;
 
 public enum TankColor {
     RED,
-    BLUE
+    BLUE,
+    CYAN,
+    WHITE,
+    PURPLE,
+    MAGENTA,
+    ORANGE,
+    YELLOW,
+    GREEN
 }

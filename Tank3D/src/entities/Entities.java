@@ -9,25 +9,31 @@ import components.*;
 import enums.TankColor;
 
 public class Entities {
-    public static Entity createUserTank(TransformGroup sceneTG, Vector3f position) {
+    public static Entity createUserTank(TransformGroup sceneTG, Vector3f position, TankColor color) {
         Entity e = new Entity(sceneTG);
-		e.addComponent(new Tank(position, TankColor.RED, e));
+		e.addComponent(new Tank(position, color, e));
         e.addComponent(new GunRecoil(e));
 		e.addComponent(new PlayerController(e));
         return e;
     }
 
-    public static Entity createNetworkTank(TransformGroup sceneTG, Vector3f position) {
+    public static Entity createNetworkTank(TransformGroup sceneTG, Vector3f position, String username, TankColor color) {
         Entity e = new Entity(sceneTG);
-        e.addComponent(new Tank(position, TankColor.BLUE, e));
+        e.addComponent(new Tank(position, color, e));
         e.addComponent(new GunRecoil(e));
-        e.addComponent(new NetworkTank(e));
+        e.addComponent(new NetworkTank(e, username));
         return e;
     }
     
     public static Entity createBlock(TransformGroup sceneTG, Vector3f position) {
         Entity e = new Entity(sceneTG);
         e.addComponent(new Block(position, e));
+        return e;
+    }
+
+    public static Entity createTorch(TransformGroup sceneTG, Vector3f position) {
+        Entity e = new Entity(sceneTG);
+        e.addComponent(new Torch(position, e));
         return e;
     }
 

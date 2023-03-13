@@ -1,6 +1,7 @@
 package components;
 
 import org.jogamp.java3d.*;
+import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3f;
 
 import ECS.*;
@@ -37,20 +38,61 @@ public class Tank extends Component {
         turretTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         gunTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
-        String colorStr = color == TankColor.RED ? "red" : "blue";
+        String colorStr = null;
+        switch (color) {
+            case RED:
+                colorStr = "red";
+                break;
+        
+            case BLUE:
+                colorStr = "blue";
+                break;
+
+            case CYAN:
+                colorStr = "cyan";
+                break;
+            
+            case WHITE:
+                colorStr = "white";
+                break;
+            
+            case PURPLE:
+                colorStr = "pruple";
+                break;
+            
+            case MAGENTA:
+                colorStr = "magenta";
+                break;
+            
+            case ORANGE:
+                colorStr = "orange";
+                break;
+            
+            case YELLOW:
+                colorStr = "yellow";
+                break;
+            
+            case GREEN:
+                colorStr = "green";
+                break;
+            default:
+                break;
+        }
 
         BranchGroup bodyBG = Util.load3DModel("res/models/" + colorStr + "-tank/body.obj");
         BranchGroup turretBG = Util.load3DModel("res/models/" + colorStr + "-tank/turret.obj");
         BranchGroup gunBG = Util.load3DModel("res/models/" + colorStr + "-tank/gun.obj");
 
+        Appearance appearance = Util.createAppearance(Util.WHITE, Util.GREY, new Color3f(0.2f, 0.2f, 0.2f), 32, Game.COLOR_PALETTE);
+
         Shape3D bodyShape = (Shape3D) bodyBG.getChild(0);
-        bodyShape.setAppearance(Util.createAppearance(Util.WHITE, Util.GREY, 32, Game.COLOR_PALETTE));
+        bodyShape.setAppearance(appearance);
 
         Shape3D turretShape = (Shape3D) turretBG.getChild(0);
-        turretShape.setAppearance(Util.createAppearance(Util.WHITE, Util.GREY, 32, Game.COLOR_PALETTE));
+        turretShape.setAppearance(appearance);
 
         Shape3D gunShape = (Shape3D) gunBG.getChild(0);
-        gunShape.setAppearance(Util.createAppearance(Util.WHITE, Util.GREY, 32, Game.COLOR_PALETTE));
+        gunShape.setAppearance(appearance);
 
         parent.entityTG.addChild(bodyBG);
 
@@ -76,7 +118,7 @@ public class Tank extends Component {
         // parent.entityTG.addChild(headlight);
     }
 
-    public void update(ESystem eSystem) {
+    public void update() {
         bodyPositionTransform.setTranslation(position);
         bodyRotTransform.rotY(Math.toRadians(direction));
         parent.entityTransform.mul(bodyPositionTransform, bodyRotTransform);

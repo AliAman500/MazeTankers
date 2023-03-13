@@ -7,5 +7,5 @@ public abstract class Component {
         this.parent = parent;
     }
     
-    public abstract void update(ESystem eSystem);
+    public abstract void update();
 }

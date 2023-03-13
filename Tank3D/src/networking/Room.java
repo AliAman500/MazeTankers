@@ -16,6 +16,12 @@ public class Room {
 		}
 	}
 	
+	public Room(RunGamePacket rPacket) {
+		for(User user : rPacket.users) {
+			users.add(user);
+		}
+	}
+	
 	public boolean has(User user) {
 		for(int i = 0; i < users.size(); i++) {
 			if(users.get(i).username.equals(user.username) && users.get(i).ipAddress.equals(user.ipAddress) && users.get(i).port == user.port) {

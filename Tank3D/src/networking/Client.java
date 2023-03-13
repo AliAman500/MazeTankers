@@ -12,6 +12,8 @@ import java.net.InetAddress;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import ECS.Entity;
+import components.NetworkTank;
 import entry.Game;
 import entry.Menu;
 import networking.Packet.ID;
@@ -29,7 +31,7 @@ public class Client implements Runnable {
 	public Client() throws Exception {
 		client = new DatagramSocket();
 		serverPort = 9888;
-		serverAddress = InetAddress.getByName("192.168.35.53");
+		serverAddress = InetAddress.getByName("192.168.125.35");
 		deviceName = InetAddress.getLocalHost().getHostName();
 		clientAddress = InetAddress.getLocalHost().getHostAddress();
 		clientPort = client.getLocalPort();
@@ -96,7 +98,15 @@ public class Client implements Runnable {
 			case RUN_GAME:
 				RunGamePacket rPacket = (RunGamePacket) packet;
 				Game.mazePNG = rPacket.mazePNG;
-				
+				for(int i = 0; i < rPacket.users.size(); i++) {
+					User currentUser = rPacket.users.get(i);
+					if(Game.user.equals(currentUser)) {
+						Game.user = currentUser;
+						break;
+					}
+				}
+
+				Game.room = new Room(rPacket);
 				JLabel label = new JLabel("  Starting game...");
 				label.setFont(new Font("Calibri", Font.PLAIN, label.getFont().getSize()));
 				label.setBounds(new Rectangle(1136/2 - 40, 440 + 50, 100, 32));
@@ -104,6 +114,18 @@ public class Client implements Runnable {
 				Menu.roomPanel.revalidate();
 				Menu.roomPanel.repaint();
 				Menu.gameStarterThread.start();
+				break;
+			case POSITION:
+				PositionPacket posPacket = (PositionPacket) packet;
+				for (int i = 0; i < Game.eSystem.numEntities(); i++) {
+					Entity e = Game.eSystem.getEntity(i);
+					NetworkTank netTank = (NetworkTank) e.getComponent("NetworkTank");
+					if(netTank != null) {
+						if(netTank.username.equals(posPacket.username)) {
+							netTank.posPacket = posPacket;
+						}
+					}
+				}
 				break;
 			default:
 				break;
