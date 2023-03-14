@@ -49,7 +49,7 @@ public class Server {
 
 				if(rooms.isEmpty()) {
 					Room room = new Room();
-					User user = new User(pPacket.username, dataPacket.getAddress().getHostAddress(), dataPacket.getPort(), null);
+					User user = new User(pPacket.username, null, dataPacket.getAddress().getHostAddress(), dataPacket.getPort(), null);
 					room.addUser(user);
 					RoomPacket rPacket = new RoomPacket(ID.CREATE_ROOM, room);
 					sendData(rPacket, dataPacket.getAddress(), dataPacket.getPort());
@@ -57,7 +57,7 @@ public class Server {
 					rooms.add(room);
 				} else {
 					Room room = rooms.get(0);
-					User user = new User(pPacket.username, dataPacket.getAddress().getHostAddress(), dataPacket.getPort(), null);
+					User user = new User(pPacket.username, null, dataPacket.getAddress().getHostAddress(), dataPacket.getPort(), null);
 					room.addUser(user);
 					RoomPacket rPacket = new RoomPacket(ID.JOIN_ROOM, room);
 					sendData(rPacket, user);
@@ -85,6 +85,7 @@ public class Server {
 					sendData(runPacketUpdated, currentUser);
 					logln("maze and position generated, sent data to client:- " + currentUser);
 				}
+				rooms.clear();
 				break;
 			case POSITION:
 				PositionPacket posPacket = (PositionPacket) packet;

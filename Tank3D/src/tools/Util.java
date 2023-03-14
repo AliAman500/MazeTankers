@@ -100,9 +100,9 @@ public class Util {
 			for(int i = 0; i < Game.room.users.size(); i++) {
 				User currentUser = Game.room.users.get(i);
 				if(Game.user.equals(currentUser)) {
-					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, Game.user.position, TankColor.ORANGE));
+					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, Game.user.position, Game.user.tColor));
 				} else {
-					eSystem.addEntity(Entities.createNetworkTank(sceneTG, currentUser.position, currentUser.username, TankColor.BLUE));
+					eSystem.addEntity(Entities.createNetworkTank(sceneTG, currentUser.position, currentUser.username, currentUser.tColor));
 				}
 			}
 		}

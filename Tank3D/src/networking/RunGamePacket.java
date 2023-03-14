@@ -10,6 +10,8 @@ import javax.imageio.ImageIO;
 
 import org.jogamp.vecmath.Vector3f;
 
+import enums.TankColor;
+
 public class RunGamePacket extends Packet {
 
 	public LinkedList<User> users = new LinkedList<User>();
@@ -32,6 +34,11 @@ public class RunGamePacket extends Packet {
 			e.printStackTrace();
 		}
 
+		for(int i = 0; i < users.size(); i++) {
+			User currentUser = users.get(i);
+			currentUser.tColor = randomColor();
+		}
+		
 		for (int y = 0; y < img.getHeight(); y++) {
 			for (int x = 0; x < img.getWidth(); x++) {
 				int pixel = img.getRGB(x, y);
@@ -54,6 +61,11 @@ public class RunGamePacket extends Packet {
 		}
 	}
 	
+	private TankColor randomColor() {
+	    int pick = new Random().nextInt(TankColor.values().length);
+	    return TankColor.values()[pick];
+	}
+	
 	public RunGamePacket(ID packetID, LinkedList<User> users, String mazePNG) {
 		this.users = users;
 		this.id = packetID;
@@ -63,7 +75,7 @@ public class RunGamePacket extends Packet {
 	public byte[] getData() {
 		String data = id.name() + " " + mazePNG;
 		for(User user : users) {
-			data += " " + user.username + " " + user.ipAddress + " " + user.port + " " + user.position.x + " " + user.position.y + " " + user.position.z;
+			data += " " + user.username + " " + user.tColor + " " + user.ipAddress + " " + user.port + " " + user.position.x + " " + user.position.y + " " + user.position.z;
 		}
 		return data.getBytes();
 	}

@@ -32,7 +32,7 @@ public class PositionPacket extends Packet {
 	public byte[] getData() {
 		String data = id.name() + " " + username + " " + forwards + " " + backwards + " " + direction;
 		for(User user : users) {
-			data += " " + user.username + " " + user.ipAddress + " " + user.port + " " + user.position.x + " " + user.position.y + " " + user.position.z;
+			data += " " + user.username + " " + user.tColor + " " + user.ipAddress + " " + user.port + " " + user.position.x + " " + user.position.y + " " + user.position.z;
 		}
 		return data.getBytes();
 	}

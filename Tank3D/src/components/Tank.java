@@ -38,46 +38,7 @@ public class Tank extends Component {
         turretTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
         gunTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 
-        String colorStr = null;
-        switch (color) {
-            case RED:
-                colorStr = "red";
-                break;
-        
-            case BLUE:
-                colorStr = "blue";
-                break;
-
-            case CYAN:
-                colorStr = "cyan";
-                break;
-            
-            case WHITE:
-                colorStr = "white";
-                break;
-            
-            case PURPLE:
-                colorStr = "pruple";
-                break;
-            
-            case MAGENTA:
-                colorStr = "magenta";
-                break;
-            
-            case ORANGE:
-                colorStr = "orange";
-                break;
-            
-            case YELLOW:
-                colorStr = "yellow";
-                break;
-            
-            case GREEN:
-                colorStr = "green";
-                break;
-            default:
-                break;
-        }
+        String colorStr = ("" + color).toLowerCase();
 
         BranchGroup bodyBG = Util.load3DModel("res/models/" + colorStr + "-tank/body.obj");
         BranchGroup turretBG = Util.load3DModel("res/models/" + colorStr + "-tank/turret.obj");

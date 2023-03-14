@@ -5,6 +5,8 @@ import java.util.LinkedList;
 
 import org.jogamp.vecmath.Vector3f;
 
+import enums.TankColor;
+
 public class Packet {
 
 	public ID id;
@@ -27,32 +29,32 @@ public class Packet {
 			String username = data[1];
 			return new PlayReqPacket(username);
 		case CREATE_ROOM:
-			User user = new User(data[1], data[2], Integer.parseInt(data[3]), new Vector3f(0, 0, 0));
+			User user = new User(data[1], TankColor.RED, data[2], Integer.parseInt(data[3]), new Vector3f(0, 0, 0));
 			return new RoomPacket(ID.CREATE_ROOM, user);
 		case JOIN_ROOM:
 			users = new LinkedList<User>();
 			for(int i = 1; i < data.length; i += 3) {
-				users.add(new User(data[i], data[i+1], Integer.parseInt(data[i+2]), new Vector3f(0, 0, 0)));
+				users.add(new User(data[i], TankColor.RED, data[i+1], Integer.parseInt(data[i+2]), new Vector3f(0, 0, 0)));
 			}
 			return new RoomPacket(ID.JOIN_ROOM, users);
 		case RUN_GAME:
 			users = new LinkedList<User>();
-			for(int i = 2; i < data.length; i += 6) {
+			for(int i = 2; i < data.length; i += 7) {
 				Vector3f pos = new Vector3f();
-				pos.x = Float.parseFloat(data[i+3]);
-				pos.y = Float.parseFloat(data[i+4]);
-				pos.z = Float.parseFloat(data[i+5]);
-				users.add(new User(data[i], data[i+1], Integer.parseInt(data[i+2]), pos));
+				pos.x = Float.parseFloat(data[i+4]);
+				pos.y = Float.parseFloat(data[i+5]);
+				pos.z = Float.parseFloat(data[i+6]);
+				users.add(new User(data[i], TankColor.valueOf(data[i+1]), data[i+2], Integer.parseInt(data[i+3]), pos));
 			}
 			return new RunGamePacket(ID.RUN_GAME, users, data[1]);
 		case POSITION:
 			users = new LinkedList<User>();
-			for(int i = 5; i < data.length; i += 6) {
+			for(int i = 5; i < data.length; i += 7) {
 				Vector3f pos = new Vector3f();
-				pos.x = Float.parseFloat(data[i+3]);
-				pos.y = Float.parseFloat(data[i+4]);
-				pos.z = Float.parseFloat(data[i+5]);
-				users.add(new User(data[i], data[i+1], Integer.parseInt(data[i+2]), pos));
+				pos.x = Float.parseFloat(data[i+4]);
+				pos.y = Float.parseFloat(data[i+5]);
+				pos.z = Float.parseFloat(data[i+6]);
+				users.add(new User(data[i], TankColor.valueOf(data[i + 1]), data[i+2], Integer.parseInt(data[i+3]), pos));
 			}
 			return new PositionPacket(data[1], Boolean.parseBoolean(data[2]), Boolean.parseBoolean(data[3]), Float.parseFloat(data[4]), users);
 		default:

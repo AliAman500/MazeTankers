@@ -94,7 +94,7 @@ public class Menu extends JFrame {
         
         playButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	Game.user = new User(textField.getText(), Game.client.clientAddress, Game.client.clientPort, null);
+            	Game.user = new User(textField.getText(), null, Game.client.clientAddress, Game.client.clientPort, null);
             	Game.client.sendData(new PlayReqPacket(Game.user.username));
             }
         });
