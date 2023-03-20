@@ -10,18 +10,16 @@ public class NetworkTank extends Component {
 
 	private Tank tank;
 	private GunRecoil recoil;
-	public String username;
 	public PositionPacket posPacket;
 
 	private float velocity = 0;
 	private float speed = 0.17f;
 	private float smoothness = 0.2f;
 
-	public NetworkTank(Entity parent, String username) {
+	public NetworkTank(Entity parent) {
 		super(parent);
 		tank = (Tank) parent.getComponent("Tank");
 		recoil = (GunRecoil) parent.getComponent("GunRecoil");
-		this.username = username;
 	}
 
 	public void update() {
@@ -35,6 +33,7 @@ public class NetworkTank extends Component {
 				velocity = Util.lerp(velocity, 0, smoothness);
 
 			tank.direction = posPacket.direction;
+			tank.turretDirection = posPacket.turretDirection;
 			tank.position.x += velocity * Math.cos(Math.toRadians(tank.direction + 90));
 			tank.position.z -= velocity * Math.sin(Math.toRadians(tank.direction + 90));
 		}

@@ -1,7 +1,10 @@
 package components;
 
 import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Geometry;
+import org.jogamp.java3d.GeometryArray;
 import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.utils.picking.PickTool;
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3f;
 
@@ -16,7 +19,7 @@ public class Block extends Component {
         
         BranchGroup blockBG = Util.load3DModel("res/models/maze-stuff/block.obj");
         Shape3D blockShape = (Shape3D) blockBG.getChild(0);
-        blockShape.setAppearance(Util.createAppearance(Util.WHITE, Util.BLACK, new Color3f(0.2f, 0.2f, 0.2f), 0, Game.COLOR_PALETTE));
+        blockShape.setAppearance(Util.createAppearance(Util.WHITE, Util.BLACK, new Color3f(0, 0, 0), 0, Game.COLOR_PALETTE));
 
         parent.entityTG.addChild(blockBG);
         parent.entityTransform.setTranslation(position);

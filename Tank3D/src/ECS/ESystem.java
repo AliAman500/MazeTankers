@@ -2,6 +2,7 @@ package ECS;
 
 import java.util.LinkedList;
 
+import org.jogamp.java3d.BranchGroup;
 import org.jogamp.java3d.TransformGroup;
 
 public class ESystem {
@@ -18,7 +19,9 @@ public class ESystem {
 
     public void removeEntity(TransformGroup sceneTG, Entity e) {
         entities.remove(e);
-        sceneTG.removeChild(e.entityTG);
+        BranchGroup bg = (BranchGroup) e.entityTG.getParent();
+        bg.detach();
+        sceneTG.removeChild(bg);
     }
 
     public Entity addEntity(Entity e) {
@@ -27,7 +30,13 @@ public class ESystem {
     }
 
     public Entity getEntity(int i) {
-        return entities.get(i);
+    	Entity e = null;
+    	try {
+    	e = entities.get(i);
+    	} catch(Exception ex) {
+    		
+    	}
+        return e;
     }
 
     public void update() {

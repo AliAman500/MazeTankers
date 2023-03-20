@@ -6,13 +6,13 @@ public class GunRecoil extends Component {
 	public float speed = 0.6f;
 	
 	private float x = 0;
-	private boolean playing = false;
+	public boolean playing = false;
 	
 	public Tank tank;
 	
+	
 	public GunRecoil(Entity parent) {
 		super(parent);
-		
 		tank = (Tank) parent.getComponent("Tank");
 	}
 

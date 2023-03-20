@@ -14,14 +14,16 @@ public class Tank extends Component {
     public Transform3D bodyRotTransform, bodyPositionTransform, turretTransform, gunTransform;
 
     public Vector3f position;
-
+    public String username;
+    
     public float direction;
     public float turretDirection;
     public float gunOffset;
 
-    public Tank(Vector3f position, TankColor color, Entity parent) {
+    public Tank(String username, Vector3f position, TankColor color, Entity parent) {
         super(parent);
         
+        this.username = username;
         this.position = position;
         this.direction = 0;
         this.turretDirection = 0;

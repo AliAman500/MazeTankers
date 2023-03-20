@@ -12,7 +12,7 @@ public class Packet {
 	public ID id;
 	
 	public enum ID {
-		PLAY_REQUEST, CREATE_ROOM, JOIN_ROOM, RUN_GAME, POSITION;
+		PLAY_REQUEST, CREATE_ROOM, JOIN_ROOM, RUN_GAME, POSITION, BULLET;
 	}
 	
 	public static Packet parse(DatagramPacket dataPacket) {
@@ -49,14 +49,22 @@ public class Packet {
 			return new RunGamePacket(ID.RUN_GAME, users, data[1]);
 		case POSITION:
 			users = new LinkedList<User>();
-			for(int i = 5; i < data.length; i += 7) {
+			for(int i = 6; i < data.length; i += 7) {
 				Vector3f pos = new Vector3f();
 				pos.x = Float.parseFloat(data[i+4]);
 				pos.y = Float.parseFloat(data[i+5]);
 				pos.z = Float.parseFloat(data[i+6]);
 				users.add(new User(data[i], TankColor.valueOf(data[i + 1]), data[i+2], Integer.parseInt(data[i+3]), pos));
 			}
-			return new PositionPacket(data[1], Boolean.parseBoolean(data[2]), Boolean.parseBoolean(data[3]), Float.parseFloat(data[4]), users);
+			return new PositionPacket(data[1], Boolean.parseBoolean(data[2]), Boolean.parseBoolean(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]), users);
+		case BULLET:
+			users = new LinkedList<User>();
+			for(int i = 8; i < data.length; i += 3) {
+				users.add(new User(data[i], TankColor.RED, data[i+1], Integer.parseInt(data[i+2]), new Vector3f(0, 0, 0)));
+			}
+			Vector3f position = new Vector3f(Float.parseFloat(data[2]), Float.parseFloat(data[3]), Float.parseFloat(data[4]));
+			Vector3f target = new Vector3f(Float.parseFloat(data[5]), Float.parseFloat(data[6]), Float.parseFloat(data[7]));
+			return new BulletPacket(data[1], position, target, users);
 		default:
 			break;
 		}

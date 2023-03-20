@@ -15,8 +15,13 @@ public class Entity {
         entityTransform = new Transform3D();
         entityTG = new TransformGroup(entityTransform);
         entityTG.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-
-        scene.addChild(entityTG);
+        entityTG.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+        entityTG.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
+        
+        BranchGroup bg = new BranchGroup();
+        bg.setCapability(BranchGroup.ALLOW_DETACH);
+        bg.addChild(entityTG);
+        scene.addChild(bg);
     }
 
     public Entity() {

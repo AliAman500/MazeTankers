@@ -20,11 +20,15 @@ import org.jogamp.java3d.PointSound;
 import org.jogamp.java3d.Sound;
 import org.jogamp.java3d.Texture2D;
 import org.jogamp.java3d.TextureAttributes;
+import org.jogamp.java3d.Transform3D;
 import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.TransparencyAttributes;
 import org.jogamp.java3d.loaders.IncorrectFormatException;
 import org.jogamp.java3d.loaders.ParsingErrorException;
 import org.jogamp.java3d.loaders.Scene;
 import org.jogamp.java3d.loaders.objectfile.ObjectFile;
+import org.jogamp.java3d.utils.geometry.Box;
+import org.jogamp.java3d.utils.geometry.Primitive;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.Viewer;
@@ -37,6 +41,7 @@ import ECS.Entity;
 import entities.Entities;
 import entry.Game;
 import enums.TankColor;
+import enums.TorchDirection;
 import networking.User;
 
 public class Util {
@@ -66,6 +71,26 @@ public class Util {
 		}
 	}
 
+	public static BranchGroup createInvisibleFloor() {
+		Appearance ap = Util.createAppearance(new Color3f(0.16f, 0.17f, 0.204f), Util.BLACK, new Color3f(0.2f, 0.2f, 0.2f), 0, null);
+        TransparencyAttributes transparency = new TransparencyAttributes(TransparencyAttributes.SCREEN_DOOR, 1f,
+				TransparencyAttributes.BLEND_SRC_ALPHA, TransparencyAttributes.BLEND_ONE);
+		ap.setTransparencyAttributes(transparency);
+        Box box = new Box(100, 0.2f, 100, Primitive.GENERATE_NORMALS, ap);
+        TransformGroup floorTg = new TransformGroup();
+        floorTg.addChild(box);
+        Transform3D transform = new Transform3D();
+        transform.setTranslation(new Vector3f(78, 1.13528f, 78));
+        Transform3D rotTransform = new Transform3D();
+        Transform3D wholeThing = new Transform3D();
+        wholeThing.mul(transform, rotTransform);
+        
+        floorTg.setTransform(wholeThing);
+        BranchGroup floorBg = new BranchGroup();
+        floorBg.addChild(floorTg);
+        return floorBg;
+	}
+	
 	public static void closeAudioDevice(SimpleUniverse su) {
 		su.getViewer().getPhysicalEnvironment().getAudioDevice().close();
 	}
@@ -85,13 +110,28 @@ public class Util {
 				if (red == 0 && green == 0 && blue == 0)
 					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
 				
-				if(red == 255 && green == 0 && blue == 0 && Game.user == null) {
+				if(red == 255 && green == 0 && blue == 0 && Game.room == null) {
 					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, 0, y * 4), TankColor.ORANGE));
 				}
 				
 				if (red == 255 && green == 106 && blue == 0) {
 					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
-					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.FORWARD));
+				}
+
+				if (red == 255 && green == 255 && blue == 0) {
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.BACK));
+				}
+
+				if (red == 0 && green == 0 && blue == 255) {
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.RIGHT));
+				}
+
+				if (red == 0 && green == 255 && blue == 0) {
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.LEFT));
 				}
 			}
 		}
@@ -147,7 +187,7 @@ public class Util {
 		Material mtl = new Material();
 
 		mtl.setShininess(shininess);
-		mtl.setAmbientColor(WHITE);
+		mtl.setAmbientColor(BLACK);
 		mtl.setDiffuseColor(diffuse);
 		mtl.setSpecularColor(specular);
 		mtl.setEmissiveColor(emmissive);
@@ -175,8 +215,10 @@ public class Util {
 		
 		TextureLoader loader = new TextureLoader(filepath, null);
 		data.texture = (Texture2D) loader.getTexture();
-		data.texAttr = new TextureAttributes();
+		data.texture.setMinFilter(Texture2D.NICEST);
+		data.texture.setMagFilter(Texture2D.NICEST);
 
+		data.texAttr = new TextureAttributes();
         data.texAttr.setTextureMode(TextureAttributes.MODULATE);
 
 		return data;

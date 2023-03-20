@@ -1,19 +1,29 @@
 package entry;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GraphicsConfiguration;
+
 import javax.swing.JFrame;
 
-import org.jogamp.java3d.*;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Canvas3D;
+import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.utils.picking.PickTool;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
+import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3f;
 
 import ECS.ESystem;
 import ECS.Entity;
 import components.Tank;
 import entities.Entities;
-import input.*;
-import networking.*;
-import tools.*;
+import input.Keyboard;
+import input.Mouse;
+import networking.Client;
+import networking.Room;
+import networking.User;
+import tools.TextureData;
+import tools.Util;
 
 public class Game extends JFrame {
 	private static final long serialVersionUID = 1L;
@@ -26,21 +36,26 @@ public class Game extends JFrame {
 	public static Thread uiThread;
 
 	public static ESystem eSystem = new ESystem();
-	
+	public static Canvas3D canvas;
+	public static PickTool picker;
+
 	public static SimpleUniverse simpleUniverse;
 	public static TextureData COLOR_PALETTE;
-
-	public static Room room;
-	public static User user;
-	public static String mazePNG = "res/mazes/maze-" + 3 + ".png";
+	public static TransformGroup sceneTG;
+	public static BranchGroup sceneBG;
 	
+	public static Room room;
+	public static User user = new User("SinglePlayer", null, null, 0, null);
+	public static String mazePNG = "res/mazes/maze-" + 3 + ".png";
+	public static Entity userTank;
+
 	private Entity setupUserMaze(TransformGroup sceneTG) {
 		Entity userTank = null;
 
 		try {
 			userTank = Util.setupMaze(mazePNG, sceneTG, eSystem);
 		} catch (Exception e) {
-			System.err.print(e);
+			e.printStackTrace();
 			System.exit(-1);
 		}
 
@@ -50,14 +65,16 @@ public class Game extends JFrame {
 	public BranchGroup createScene(SimpleUniverse simpleUniverse) {
 		COLOR_PALETTE = Util.loadTexture("res/textures/color-palette.png");
 
-		BranchGroup sceneBG = new BranchGroup();
-		TransformGroup sceneTG = new TransformGroup();
+		sceneBG = new BranchGroup();
+		sceneTG = new TransformGroup();
+		sceneTG.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
+		sceneTG.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
 		BranchGroup staticLightGroup = new BranchGroup();
 
-		Util.addDirectionalLight(staticLightGroup, new Vector3f(0.4f, -1, -1), Util.WHITE);
+		Util.addDirectionalLight(staticLightGroup, new Vector3f(0.4f, -1, -1), new Color3f(0.4f, 0.4f, 0.4f));
 
-		Entity userTank = setupUserMaze(sceneTG);
-
+		userTank = setupUserMaze(sceneTG);
+		
 		eSystem.addEntity(Entities.createCamera(simpleUniverse, (Tank) userTank.getComponent("Tank")));
 		eSystem.addEntity(Entities.createFloor(sceneTG));
 
@@ -72,6 +89,7 @@ public class Game extends JFrame {
 
 		Mouse.update(this);
 		Keyboard.update();
+
 	}
 
 	public Game() throws Exception {
@@ -100,9 +118,11 @@ public class Game extends JFrame {
 		});
 
 		GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
-		Canvas3D canvas = new Canvas3D(config);
+		canvas = new Canvas3D(config);
 		canvas.addKeyListener(new Keyboard());
-		canvas.addMouseListener(new Mouse());
+		Mouse m = new Mouse();
+		canvas.addMouseListener(m);
+		canvas.addMouseMotionListener(m);
 
 		simpleUniverse = new SimpleUniverse(canvas);
 		Util.enableAudio(simpleUniverse);
@@ -110,6 +130,11 @@ public class Game extends JFrame {
 		BranchGroup sceneBG = createScene(simpleUniverse);
 		sceneBG.addChild(Util.createBackgroundSound("res/audio/turkey-in-the-straw.wav"));
 
+		BranchGroup floorBg = Util.createInvisibleFloor();
+		sceneBG.addChild(floorBg);
+
+		picker = new PickTool(floorBg);
+		picker.setMode(PickTool.GEOMETRY);
 		sceneBG.compile();
 		simpleUniverse.addBranchGraph(sceneBG);
 
@@ -137,7 +162,7 @@ public class Game extends JFrame {
 		client = new Client();
 		clientThread = new Thread(client);
 		clientThread.start();
-		
+
 		uiThread = new Thread(new Runnable() {
 			public void run() {
 				new Menu();
