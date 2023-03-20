@@ -46,7 +46,7 @@ public class Game extends JFrame {
 	
 	public static Room room;
 	public static User user = new User("SinglePlayer", null, null, 0, null);
-	public static String mazePNG = "res/mazes/maze-" + 3 + ".png";
+	public static String mazePNG = "";
 	public static Entity userTank;
 
 	private Entity setupUserMaze(TransformGroup sceneTG) {
