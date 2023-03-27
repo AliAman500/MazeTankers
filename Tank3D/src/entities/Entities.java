@@ -16,6 +16,7 @@ import components.Bullet;
 import components.Camera;
 import components.CameraController;
 import components.Floor;
+import components.Forest;
 import components.GunRecoil;
 import components.NetworkTank;
 import components.PlantPot;
@@ -87,6 +88,12 @@ public class Entities {
 		e.addComponent(new Tank(username, position, color, e));
 		e.addComponent(new GunRecoil(e));
 		e.addComponent(new NetworkTank(e));
+		return e;
+	}
+
+	public static Entity createForest(TransformGroup sceneTG) {
+		Entity e = new Entity(sceneTG);
+		e.addComponent(new Forest(new Vector3f(-70, -4.5f, -70), e));
 		return e;
 	}
 

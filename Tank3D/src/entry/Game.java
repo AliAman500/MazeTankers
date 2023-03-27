@@ -84,6 +84,7 @@ public class Game extends JFrame {
 		cc = (CameraController) c.getComponent("CameraController");
 		eSystem.addEntity(Entities.createSkybox(c, sceneTG));
 		eSystem.addEntity(Entities.createFloor(sceneTG));
+		eSystem.addEntity(Entities.createForest(sceneTG));
 
 		sceneBG.addChild(staticLightGroup);
 		sceneBG.addChild(sceneTG);
@@ -134,8 +135,8 @@ public class Game extends JFrame {
 		Util.enableAudio(simpleUniverse);
 
 		BranchGroup sceneBG = createScene(simpleUniverse);
-
 		BranchGroup floorBg = Util.createInvisibleFloor();
+		
 		sceneBG.addChild(floorBg);
 
 		picker = new PickTool(floorBg);
@@ -149,8 +150,8 @@ public class Game extends JFrame {
 		Image windowIcon = Toolkit.getDefaultToolkit().getImage("res/textures/icon.png");
         this.setIconImage(windowIcon);
 		this.setSize(1136, 640);
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-		this.setUndecorated(true);
+//		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+//		this.setUndecorated(true);
 		this.setTitle("Maze Tankers");
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

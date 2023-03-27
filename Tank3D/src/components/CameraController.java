@@ -3,8 +3,6 @@ package components;
 import org.jogamp.vecmath.Vector2f;
 import org.jogamp.vecmath.Vector3f;
 
-import com.jogamp.newt.event.KeyEvent;
-
 import ECS.Component;
 import ECS.Entity;
 import input.Keyboard;
@@ -15,7 +13,7 @@ public class CameraController extends Component {
 	private Camera camera;
 	public Tank target;
 
-	private float distance = 10;
+	private float distance = 5;
 	private float panSpeed = 0.001f;
 	private float smoothness = 0.2f;
 	private float lx;

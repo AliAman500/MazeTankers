@@ -68,7 +68,7 @@ public class Menu extends JFrame {
 			bgClip.open(audioIn);
 			bgClip.loop(Clip.LOOP_CONTINUOUSLY);
 			FloatControl gainControl = (FloatControl) bgClip.getControl(FloatControl.Type.MASTER_GAIN);
-			float volume = 0.03f;
+			float volume = 0.12f;
 			float dB = (float) (Math.log(volume) / Math.log(10.0) * 20.0);
 			gainControl.setValue(dB);
 		} catch (Exception e) {
