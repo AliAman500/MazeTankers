@@ -8,6 +8,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 
 import org.jdesktop.j3d.examples.sound.BackgroundSoundBehavior;
+import org.jdesktop.j3d.examples.sound.PointSoundBehavior;
 import org.jdesktop.j3d.examples.sound.audio.JOALMixer;
 import org.jogamp.java3d.Appearance;
 import org.jogamp.java3d.BackgroundSound;
@@ -34,6 +35,8 @@ import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.Viewer;
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Point3d;
+import org.jogamp.vecmath.Point3f;
+import org.jogamp.vecmath.Vector2f;
 import org.jogamp.vecmath.Vector3f;
 
 import ECS.ESystem;
@@ -58,19 +61,6 @@ public class Util {
 
 	public final static BoundingSphere LIGHT_BOUNDS = new BoundingSphere(new Point3d(), 10000.0);
 
-	public static void enableAudio(SimpleUniverse simple_U) {
-		JOALMixer mixer = null; // create a joalmixer
-		Viewer viewer = simple_U.getViewer();
-		viewer.getView().setBackClipDistance(20.0f);// disappear beyond 20f
-		if (mixer == null && viewer.getView().getUserHeadToVworldEnable()) {
-			mixer = new JOALMixer(viewer.getPhysicalEnvironment());
-			if (!mixer.initialize()) {// add audio device
-				System.out.println("Open AL failed to init");
-				viewer.getPhysicalEnvironment().setAudioDevice(null);
-			}
-		}
-	}
-
 	public static BranchGroup createInvisibleFloor() {
 		Appearance ap = Util.createAppearance(new Color3f(0.16f, 0.17f, 0.204f), Util.BLACK, new Color3f(0.2f, 0.2f, 0.2f), 0, null);
         TransparencyAttributes transparency = new TransparencyAttributes(TransparencyAttributes.SCREEN_DOOR, 1f,
@@ -80,7 +70,7 @@ public class Util {
         TransformGroup floorTg = new TransformGroup();
         floorTg.addChild(box);
         Transform3D transform = new Transform3D();
-        transform.setTranslation(new Vector3f(78, 1.13528f, 78));
+        transform.setTranslation(new Vector3f(78, 1.13528f - 1.4f, 78));
         Transform3D rotTransform = new Transform3D();
         Transform3D wholeThing = new Transform3D();
         wholeThing.mul(transform, rotTransform);
@@ -91,6 +81,39 @@ public class Util {
         return floorBg;
 	}
 	
+	public static PointSound createPointSound(String filepath, float volume, int loop, Point3f position) {
+        PointSound ps = new PointSound();
+        ps.setCapability(PointSound.ALLOW_ENABLE_WRITE);
+        ps.setCapability(PointSound.ALLOW_LOOP_WRITE);
+        ps.setEnable(true);
+        ps.setInitialGain(volume);
+        ps.setLoop(loop);
+        ps.setBounds(Util.LIGHT_BOUNDS);
+
+        PointSoundBehavior behavior = new PointSoundBehavior(ps, Util.locateSound(filepath), position);
+        behavior.setBounds(Util.LIGHT_BOUNDS);
+        return ps;
+    }
+	
+	public static void enableAudio(SimpleUniverse simple_U) {
+		JOALMixer mixer = null; // create a joalmixer
+        Viewer viewer = simple_U.getViewer();
+        viewer.getView().setBackClipDistance(4000.0f);
+        if (mixer == null && viewer.getView().getUserHeadToVworldEnable()) {
+            mixer = new JOALMixer(viewer.getPhysicalEnvironment());
+            if (!mixer.initialize()) {// add audio device
+                System.out.println("Open AL failed to init");
+                viewer.getPhysicalEnvironment().setAudioDevice(null);
+            }
+        }
+	}
+
+	public static float distance(Vector2f point1, Vector2f point2) {
+        float dx = point1.x - point2.x;
+        float dy = point1.y - point2.y;
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+	
 	public static void closeAudioDevice(SimpleUniverse su) {
 		su.getViewer().getPhysicalEnvironment().getAudioDevice().close();
 	}
@@ -98,40 +121,54 @@ public class Util {
 	public static Entity setupMaze(String filepath, TransformGroup sceneTG, ESystem eSystem) throws Exception {
 		BufferedImage img = ImageIO.read(new File(filepath));
 		Entity userTank = null;
-
 		for (int y = 0; y < img.getHeight(); y++) {
 			for (int x = 0; x < img.getWidth(); x++) {
 				int pixel = img.getRGB(x, y);
+
+				float variation = -0.5f;
 
 				int red = (pixel >> 16) & 255;
                 int green = (pixel >> 8) & 255;
                 int blue = pixel & 255;
 
 				if (red == 0 && green == 0 && blue == 0)
-					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
 				
 				if(red == 255 && green == 0 && blue == 0 && Game.room == null) {
-					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, 0, y * 4), TankColor.ORANGE));
+					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, -1.4f, y * 4), TankColor.RED));
 				}
 				
 				if (red == 255 && green == 106 && blue == 0) {
-					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
-					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.FORWARD));
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4), TorchDirection.FORWARD));
 				}
 
 				if (red == 255 && green == 255 && blue == 0) {
-					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
-					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.BACK));
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4), TorchDirection.BACK));
 				}
 
 				if (red == 0 && green == 0 && blue == 255) {
-					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
-					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.RIGHT));
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4), TorchDirection.RIGHT));
 				}
 
 				if (red == 0 && green == 255 && blue == 0) {
-					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 3, y * 4)));
-					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 3, y * 4), TorchDirection.LEFT));
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
+					eSystem.addEntity(Entities.createTorch(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4), TorchDirection.LEFT));
+				}
+
+				if (red == 178 && green == 71 && blue == 0) {
+					eSystem.addEntity(Entities.createBarrels(sceneTG, new Vector3f(x * 4, -1, y * 4)));
+				}
+
+				if (red == 178 && green == 0 && blue == 255) {
+					eSystem.addEntity(Entities.createPlantPot(sceneTG, new Vector3f(x * 4, -1.5f, y * 4)));
+				}
+
+				if (red == 0 && green == 255 && blue == 255) {
+					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
+					eSystem.addEntity(Entities.createSkull(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
 				}
 			}
 		}
@@ -148,17 +185,6 @@ public class Util {
 		}
 		
 		return userTank;
-	}
-	
-	public static BackgroundSound createBackgroundSound(String filepath) {
-		BackgroundSound bgs = new BackgroundSound();
-		bgs.setContinuousEnable(true);
-		bgs.setInitialGain(0.15f);
-		bgs.setLoop(Sound.INFINITE_LOOPS);
-		BackgroundSoundBehavior player = new BackgroundSoundBehavior(bgs, locateSound(filepath));
-		bgs.setBounds(LIGHT_BOUNDS);
-		player.setBounds(LIGHT_BOUNDS);
-		return bgs;
 	}
 
 	public static URL locateSound(String filepath) {
@@ -204,6 +230,16 @@ public class Util {
 		return appearance;
 	}
 
+	public static float clamp(float value, float min, float max) {
+        if (value < min) {
+            return min;
+        } else if (value > max) {
+            return max;
+        } else {
+            return value;
+        }
+    }
+
 	public static void addDirectionalLight(BranchGroup lightGroup, Vector3f direction, Color3f color) {
 		DirectionalLight directionalLight = new DirectionalLight(color, direction);
 		directionalLight.setInfluencingBounds(LIGHT_BOUNDS);
@@ -215,8 +251,8 @@ public class Util {
 		
 		TextureLoader loader = new TextureLoader(filepath, null);
 		data.texture = (Texture2D) loader.getTexture();
-		data.texture.setMinFilter(Texture2D.NICEST);
-		data.texture.setMagFilter(Texture2D.NICEST);
+		data.texture.setMinFilter(Texture2D.BASE_LEVEL_POINT);
+		data.texture.setMagFilter(Texture2D.BASE_LEVEL_POINT);
 
 		data.texAttr = new TextureAttributes();
         data.texAttr.setTextureMode(TextureAttributes.MODULATE);

@@ -1,10 +1,15 @@
 package components;
 
-import org.jogamp.java3d.*;
+import org.jogamp.java3d.Appearance;
+import org.jogamp.java3d.BranchGroup;
+import org.jogamp.java3d.Shape3D;
+import org.jogamp.java3d.Transform3D;
+import org.jogamp.java3d.TransformGroup;
 import org.jogamp.vecmath.Color3f;
 import org.jogamp.vecmath.Vector3f;
 
-import ECS.*;
+import ECS.Component;
+import ECS.Entity;
 import entry.Game;
 import enums.TankColor;
 import tools.Util;
@@ -15,14 +20,16 @@ public class Tank extends Component {
 
     public Vector3f position;
     public String username;
+    public boolean die = false;
     
     public float direction;
     public float turretDirection;
     public float gunOffset;
+    public PlayerController controller;
 
     public Tank(String username, Vector3f position, TankColor color, Entity parent) {
         super(parent);
-        
+
         this.username = username;
         this.position = position;
         this.direction = 0;
@@ -46,7 +53,7 @@ public class Tank extends Component {
         BranchGroup turretBG = Util.load3DModel("res/models/" + colorStr + "-tank/turret.obj");
         BranchGroup gunBG = Util.load3DModel("res/models/" + colorStr + "-tank/gun.obj");
 
-        Appearance appearance = Util.createAppearance(Util.WHITE, Util.GREY, new Color3f(0.2f, 0.2f, 0.2f), 32, Game.COLOR_PALETTE);
+        Appearance appearance = Util.createAppearance(Util.WHITE, Util.GREY, new Color3f(), 32, Game.COLOR_PALETTE);
 
         Shape3D bodyShape = (Shape3D) bodyBG.getChild(0);
         bodyShape.setAppearance(appearance);
@@ -60,27 +67,34 @@ public class Tank extends Component {
         parent.entityTG.addChild(bodyBG);
 
         Transform3D turretOffset = new Transform3D();
-        turretOffset.setTranslation(new Vector3f(-0.27f, 0.482142f, -0.356371f));
+        turretOffset.setTranslation(new Vector3f(0, 0.482142f, -0.356371f));
         TransformGroup turretPosTG = new TransformGroup(turretOffset);
         turretTG.addChild(turretBG);
         turretPosTG.addChild(turretTG);
 
         Transform3D gunOffset = new Transform3D();
-        gunOffset.setTranslation(new Vector3f(0.028283f, 1.13528f, -1.0738f));
+        gunOffset.setTranslation(new Vector3f(0, 1.13528f, -1.0738f));
         TransformGroup gunPosTG = new TransformGroup(gunOffset);
         gunTG.addChild(gunBG);
         gunPosTG.addChild(gunTG);
 
         turretTG.addChild(gunPosTG);
         parent.entityTG.addChild(turretPosTG);
-
-        // add headlight here:
-        // direction of light will always be forward (0, 0, -1)
-        // SpotLight headlight = new SpotLight(Util.WHITE, new Point3f(0, 0, -2), new Point3f(1, 0.1f, 0), new Vector3f(0, 0, -1), 45, 1);
-        // headlight.setInfluencingBounds(Util.LIGHT_BOUNDS);
-        // parent.entityTG.addChild(headlight);
     }
 
+    public Vector3f getGunWorld() {
+        Transform3D t = new Transform3D();
+        Vector3f p = new Vector3f();
+
+        gunTG.getLocalToVworld(t);
+        t.get(p);
+
+        return p;
+    }
+    
+    public float dieSpeed = 0.025f;
+    private float scale = 1;
+    
     public void update() {
         bodyPositionTransform.setTranslation(position);
         bodyRotTransform.rotY(Math.toRadians(direction));
@@ -89,8 +103,24 @@ public class Tank extends Component {
         turretTransform.rotY(Math.toRadians(turretDirection));
         gunTransform.setTranslation(new Vector3f(0, 0, gunOffset));
 
-        parent.superUpdate();
         turretTG.setTransform(turretTransform);
         gunTG.setTransform(gunTransform);
+        
+        parent.entityTransform.setScale(scale);
+        if(die) {
+        	controller = (PlayerController) parent.getComponent("PlayerController");
+        	scale -= dieSpeed;
+        	direction -= 15;
+        	
+        	if(scale <= 0) {
+        		if(controller != null) {
+        			CameraController.playerDied = true;
+        		}
+        		dieSpeed = 0;
+        		Game.eSystem.removeEntity(Game.sceneTG, parent);
+        	}
+        }
+        
+        parent.superUpdate();
     }
 }

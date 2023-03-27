@@ -2,6 +2,8 @@ package entry;
 
 import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
+import java.awt.Image;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -15,6 +17,7 @@ import org.jogamp.vecmath.Vector3f;
 
 import ECS.ESystem;
 import ECS.Entity;
+import components.CameraController;
 import components.Tank;
 import entities.Entities;
 import input.Keyboard;
@@ -38,6 +41,7 @@ public class Game extends JFrame {
 	public static ESystem eSystem = new ESystem();
 	public static Canvas3D canvas;
 	public static PickTool picker;
+	public static CameraController cc;
 
 	public static SimpleUniverse simpleUniverse;
 	public static TextureData COLOR_PALETTE;
@@ -46,7 +50,7 @@ public class Game extends JFrame {
 	
 	public static Room room;
 	public static User user = new User("SinglePlayer", null, null, 0, null);
-	public static String mazePNG = "";
+	public static String mazePNG = "res/mazes/maze-" + 4 + ".png";
 	public static Entity userTank;
 
 	private Entity setupUserMaze(TransformGroup sceneTG) {
@@ -70,12 +74,15 @@ public class Game extends JFrame {
 		sceneTG.setCapability(TransformGroup.ALLOW_CHILDREN_WRITE);
 		sceneTG.setCapability(TransformGroup.ALLOW_CHILDREN_EXTEND);
 		BranchGroup staticLightGroup = new BranchGroup();
-
-		Util.addDirectionalLight(staticLightGroup, new Vector3f(0.4f, -1, -1), new Color3f(0.4f, 0.4f, 0.4f));
+		
+		Util.addDirectionalLight(staticLightGroup, new Vector3f(-1, -1, 0.4f), new Color3f(0.7f, 0.7f, 0.7f));
 
 		userTank = setupUserMaze(sceneTG);
 		
-		eSystem.addEntity(Entities.createCamera(simpleUniverse, (Tank) userTank.getComponent("Tank")));
+		Entity c = eSystem.addEntity(Entities.createCamera(simpleUniverse, (Tank) userTank.getComponent("Tank")));
+		eSystem.addEntity(Entities.createBackgroundEntity(sceneTG, c));
+		cc = (CameraController) c.getComponent("CameraController");
+		eSystem.addEntity(Entities.createSkybox(c, sceneTG));
 		eSystem.addEntity(Entities.createFloor(sceneTG));
 
 		sceneBG.addChild(staticLightGroup);
@@ -93,7 +100,6 @@ public class Game extends JFrame {
 	}
 
 	public Game() throws Exception {
-
 		thread = new Thread(new Runnable() {
 			public void run() {
 				long lastTime = System.nanoTime();
@@ -122,13 +128,12 @@ public class Game extends JFrame {
 		canvas.addKeyListener(new Keyboard());
 		Mouse m = new Mouse();
 		canvas.addMouseListener(m);
-		canvas.addMouseMotionListener(m);
+		canvas.addMouseWheelListener(m);
 
 		simpleUniverse = new SimpleUniverse(canvas);
 		Util.enableAudio(simpleUniverse);
 
 		BranchGroup sceneBG = createScene(simpleUniverse);
-		sceneBG.addChild(Util.createBackgroundSound("res/audio/turkey-in-the-straw.wav"));
 
 		BranchGroup floorBg = Util.createInvisibleFloor();
 		sceneBG.addChild(floorBg);
@@ -140,8 +145,12 @@ public class Game extends JFrame {
 
 		setLayout(new BorderLayout());
 		add("Center", canvas);
-
+		
+		Image windowIcon = Toolkit.getDefaultToolkit().getImage("res/textures/icon.png");
+        this.setIconImage(windowIcon);
 		this.setSize(1136, 640);
+		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		this.setUndecorated(true);
 		this.setTitle("Maze Tankers");
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -159,6 +168,7 @@ public class Game extends JFrame {
 	}
 
 	public static void main(String[] args) throws Exception {
+		Menu.changeLookAndFeel();
 		client = new Client();
 		clientThread = new Thread(client);
 		clientThread.start();

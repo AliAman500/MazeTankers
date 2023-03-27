@@ -8,19 +8,19 @@ public class BulletPacket extends Packet {
 
 	public LinkedList<User> users = new LinkedList<User>();
 	public Vector3f position;
-	public Vector3f target;
+	public float direction;
 	public String username;
 	
-	public BulletPacket(String username, Vector3f position, Vector3f target, LinkedList<User> users) {
+	public BulletPacket(String username, Vector3f position, float direction, LinkedList<User> users) {
 		this.username = username;
 		this.position = position;
-		this.target = target;
+		this.direction = direction;
 		this.users = users;
 		this.id = ID.BULLET;
 	}
 	
 	public byte[] getData() {
-		String data = id.name() + " " + username + " " + position.x + " " + position.y + " " + position.z + " " + target.x + " " + target.y + " " + target.z;
+		String data = id.name() + " " + username + " " + position.x + " " + position.y + " " + position.z + " " + direction;
 		for(User user : users) {
 			data += " " + user.username + " " + user.ipAddress + " " + user.port;
 		}

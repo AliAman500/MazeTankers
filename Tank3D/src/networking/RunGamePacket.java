@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -57,7 +56,7 @@ public class RunGamePacket extends Packet {
                 int blue = pixel & 255;
                 
                 if(red == 128 && green == 128 && blue == 128) {
-                	spawnPoints.add(new Vector3f(x * 4, 0, y * 4));
+                	spawnPoints.add(new Vector3f(x * 4, -1.4f, y * 4));
                 }
 			}
 		}

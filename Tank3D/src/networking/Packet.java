@@ -59,12 +59,12 @@ public class Packet {
 			return new PositionPacket(data[1], Boolean.parseBoolean(data[2]), Boolean.parseBoolean(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]), users);
 		case BULLET:
 			users = new LinkedList<User>();
-			for(int i = 8; i < data.length; i += 3) {
+			for(int i = 6; i < data.length; i += 3) {
 				users.add(new User(data[i], TankColor.RED, data[i+1], Integer.parseInt(data[i+2]), new Vector3f(0, 0, 0)));
 			}
 			Vector3f position = new Vector3f(Float.parseFloat(data[2]), Float.parseFloat(data[3]), Float.parseFloat(data[4]));
-			Vector3f target = new Vector3f(Float.parseFloat(data[5]), Float.parseFloat(data[6]), Float.parseFloat(data[7]));
-			return new BulletPacket(data[1], position, target, users);
+			float direction = Float.parseFloat(data[5]);
+			return new BulletPacket(data[1], position, direction, users);
 		default:
 			break;
 		}

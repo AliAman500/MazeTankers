@@ -30,7 +30,7 @@ public class Camera extends Component {
         rotationTransform = new Transform3D();
 
         simpleUniverse.getViewer().getView().setFieldOfView(Math.toRadians(FOV));
-        simpleUniverse.getViewer().getView().setBackClipDistance(1000);
+        simpleUniverse.getViewer().getView().setBackClipDistance(4000);
 
         parent.entityTG = simpleUniverse.getViewingPlatform().getViewPlatformTransform();
     }

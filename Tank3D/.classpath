@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="lib/jogamp-fat.jar"/>
 	<classpathentry kind="lib" path="lib/jogamp-fat-test.jar"/>
 	<classpathentry kind="lib" path="lib/vecmath.jar"/>
+	<classpathentry kind="lib" path="lib/flatlaf-3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
