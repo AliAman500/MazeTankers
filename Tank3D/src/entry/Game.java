@@ -53,6 +53,8 @@ public class Game extends JFrame {
 	public static String mazePNG = "res/mazes/maze-" + 4 + ".png";
 	public static Entity userTank;
 
+	public static JFrame frame;
+	
 	private Entity setupUserMaze(TransformGroup sceneTG) {
 		Entity userTank = null;
 
@@ -91,7 +93,7 @@ public class Game extends JFrame {
 
 		return sceneBG;
 	}
-
+	
 	public void gameLogic() {
 		eSystem.update();
 
@@ -150,12 +152,11 @@ public class Game extends JFrame {
 		Image windowIcon = Toolkit.getDefaultToolkit().getImage("res/textures/icon.png");
         this.setIconImage(windowIcon);
 		this.setSize(1136, 640);
-//		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-//		this.setUndecorated(true);
 		this.setTitle("Maze Tankers");
 		this.setVisible(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
+		frame = this;
 	}
 
 	public static void startGame() {
