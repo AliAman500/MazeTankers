@@ -35,6 +35,8 @@ public class Client implements Runnable {
 	public String clientAddress;
 	public int clientPort;
 
+	public static JButton play = new JButton("Start Game!");
+	
 	public Client() throws Exception {
 		client = new DatagramSocket();
 		serverPort = 9888;
@@ -74,8 +76,9 @@ public class Client implements Runnable {
 				Game.room = new Room(cPacket);
 				Menu.cards.show(Menu.contentPane, "room");
 				Menu.addUsername(Game.user.username);
-				JButton play = new JButton("Start Game!");
+				play = new JButton("Start Game!");
 				play.setBounds(new Rectangle(1136 / 2 - 100, 440 + 50, 200, 46));
+				play.setEnabled(false);
 				play.addActionListener(new ActionListener() {
 
 					public void actionPerformed(ActionEvent e) {
@@ -94,7 +97,9 @@ public class Client implements Runnable {
 			case JOIN_ROOM:
 				RoomPacket jPacket = (RoomPacket) packet;
 				Game.room = new Room(jPacket);
-
+				if(Game.room.users.size() >= 2) {
+					play.setEnabled(true);
+				}
 				Menu.clearRows();
 				for (int i = 0; i < jPacket.users.size(); i++) {
 					Menu.addUsername(jPacket.users.get(i).username);
