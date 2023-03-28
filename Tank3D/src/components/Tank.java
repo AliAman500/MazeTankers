@@ -117,6 +117,7 @@ public class Tank extends Component {
         			CameraController.playerDied = true;
         		}
         		dieSpeed = 0;
+        		Game.leaderBoard.addFirst(username);
         		Game.eSystem.removeEntity(Game.sceneTG, parent);
         	}
         }

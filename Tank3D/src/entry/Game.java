@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.util.LinkedList;
 
 import javax.swing.JFrame;
 
@@ -32,9 +33,10 @@ public class Game extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	public static Client client;
-
+	public static LinkedList<String> leaderBoard = new LinkedList<String>();
+	
 	public static Thread clientThread;
-	public Thread thread;
+	public static Thread thread;
 
 	public static Thread uiThread;
 
@@ -93,10 +95,33 @@ public class Game extends JFrame {
 
 		return sceneBG;
 	}
-	
+	boolean gameEnded = false;
 	public void gameLogic() {
 		eSystem.update();
-
+		if(room != null) {
+			int numTanks = 0;
+			for(int i = 0; i < eSystem.numEntities(); i++) {
+				Entity e = eSystem.getEntity(i);
+				Tank tank = (Tank) e.getComponent("Tank");
+				if(tank != null) {
+					numTanks++;
+				}
+			}
+			
+			if(numTanks <= 1 && !gameEnded) {
+				for(int i = 0; i < eSystem.numEntities(); i++) {
+					Entity e = eSystem.getEntity(i);
+					Tank tank = (Tank) e.getComponent("Tank");
+					if(tank != null) {
+						leaderBoard.addFirst(tank.username);
+						break;
+					}
+				}
+				new EndScreen(leaderBoard);
+				gameEnded = true;
+				frame.dispose();
+			}
+		}
 		Mouse.update(this);
 		Keyboard.update();
 

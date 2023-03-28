@@ -6,8 +6,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
-
+import entry.EndScreen;
 import entry.Game;
 
 public class Keyboard implements KeyListener {
