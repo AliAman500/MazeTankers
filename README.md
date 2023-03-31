@@ -35,12 +35,13 @@ If you receive an ArrayIndexOutOfBoundsException when you try to play, you will 
 
 --add-exports java.base/java.lang=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/sun.java2d=ALL-UNNAMED
 
-## Open-source
+## Licensing
 Our project is open-source, we believe that allowing the community to reuse our code, we can help individuals better understand key concepts in programming and potentially work on their own projects to create valuable software for people. Open Source helps the programming community by removing barriers between innovators. It promotes a free exchange of ideas within a community driven to learn and better themselves and the industry as a whole. If you want to add more features to the game, contact burkia@uwindsor.ca to get collobaration permission.
-## Contributing
+
+**Contribution**
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. If you have a suggestion that would make this better, please fork the repo and create a pull request.
 
-##Licensing
+**Licensed Libraries**
 ###### 1 - Java3D licensed under the GNU LGPL version 2.1 for public use.
 ###### 2 - Java AWT: Licensed to the Apache Software Foundation (ASF) under one or more contributor license agreements.  See the NOTICE file distributed with this work for additional information regarding copyright ownership. The ASF licenses this file to You under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.  Public use allowed.
 
