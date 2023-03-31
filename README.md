@@ -2,10 +2,7 @@
 
 
 ## Description
-The main focus of the game is to traverse a pre-generated maze and defeat the other player before they defeat you. In the game, there are multiple tanks which face off against each other by shooting at each other. When all enemies' health reach 0, you win, if your health reaches 0, you lose. One shot is all it takes to destroy a tank! So be careful with positioning and aim, try to make the most out of each shot!
-<br/>
-<br/>
-Projectiles generated from shooting can also bounce off of walls. They bounce adjacent to where they hit.
+The main focus of the game is to traverse a pre-generated maze and defeat the other player before they defeat you. In the game, there are multiple tanks which face off against each other by shooting at each other. One shot is all it takes to destroy a tank! So be careful with positioning and aim, try to make the most out of each shot! Projectiles generated from shooting can also bounce off of walls and your own bullet can damage you, making up for an interesting gameplay. 
 <br/>
 
 ### Built With
