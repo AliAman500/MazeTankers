@@ -10,8 +10,8 @@ Projectiles generated from shooting can also bounce off of walls. They bounce ad
 
 ### Built With
 - Java3D for 3d models and awt for graphics
-- Java Networking using java.net library
-- models were built with Blender or taken from creative commons, no licensed materials used
+- Networking using java.net library, UDP-based networking
+- models were built with Blender or taken from creative commons, no licensed assets used
 <hr/>
 
 ## Controls
