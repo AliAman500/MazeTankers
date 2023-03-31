@@ -25,7 +25,7 @@ Move mouse to aim
 Left click to shoot bullet
 
 ## Windows/Mac/Linux
-TANK3D can be installed at https://github.com/AliAman500/Tank3D. Pull the project in Eclipse using the link.
+MazeTankers can be installed at https://github.com/AliAman500/Tank3D. Pull the project in Eclipse using the link.
 
 #### Troubleshooting and Errors
 If you receive an ArrayIndexOutOfBoundsException when you try to play, you will need to add the following vm arguments
