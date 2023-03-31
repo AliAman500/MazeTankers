@@ -27,8 +27,9 @@ Left click to shoot bullet
 ## Installation and starting the game
 MazeTankers can be installed at https://github.com/AliAman500/Tank3D. Pull the project in Eclipse using the link. To play the game on local network, run the Server.java file. Only one machine can have the Server running on it. Copy the Local IP address mentioned in the Server program. Run Game.java and paste the ip address that was copied in the ip address text field, type in a username and click "Multiplayer". You will now be connected to the server and a lobby will be generated. To play with friends and make them join the lobby, send them the ip address that you copied and they can use it to join. To make your friends join from other networks, like their homes, you must forward port 9888 on your router and send them the public ip of server, but people on the same network as the Server will still use the local IP to join.
 
-**NOTE:** Server will only run on one machine, and players will only use the Game.java file to connect to the server and play the game.
-**NOTE:** Playing the game from multiple networks is still in progress as issues persist. In the meantime, players on local network can play without any issues.
+**Note:** Server will only run on one machine, and players will only use the Game.java file to connect to the server and play the game.
+
+**Note:** Playing the game from multiple networks is still in progress as issues persist. In the meantime, players on local network can play without any issues.
 
 #### Troubleshooting and Errors
 If you receive an ArrayIndexOutOfBoundsException when you try to play, you will need to add the following vm arguments
