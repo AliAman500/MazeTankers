@@ -11,7 +11,7 @@ Projectiles generated from shooting can also bounce off of walls. They bounce ad
 ### Built With
 - Java3D for 3d models and awt for graphics
 - Networking using java.net library, UDP-based networking
-- models were built with Blender or taken from creative commons, no licensed assets used
+- 3D Models were built with Blender or taken from creative commons, no licensed assets used
 <hr/>
 
 ## Controls
@@ -23,7 +23,9 @@ Projectiles generated from shooting can also bounce off of walls. They bounce ad
 <br/>
 'D' - turn right
 <br/>
-lclick - shoot bullet
+Move mouse to aim
+<br/>
+Left click to shoot bullet
 
 ## Windows/Mac/Linux
 TANK3D can be installed at https://github.com/AliAman500/Tank3D. Pull the project in Eclipse using the link.
