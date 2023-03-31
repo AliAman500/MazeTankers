@@ -24,8 +24,11 @@ Move mouse to aim
 <br/>
 Left click to shoot bullet
 
-## Windows/Mac/Linux
-MazeTankers can be installed at https://github.com/AliAman500/Tank3D. Pull the project in Eclipse using the link.
+## Installation and starting the game
+MazeTankers can be installed at https://github.com/AliAman500/Tank3D. Pull the project in Eclipse using the link. To play the game on local network, run the Server.java file. Only one machine can have the Server running on it. Copy the Local IP address mentioned in the Server program. Run Game.java and paste the ip address that was copied in the ip address text field, type in a username and click "Multiplayer". You will now be connected to the server and a lobby will be generated. To play with friends and make them join the lobby, send them the ip address that you copied and they can use it to join. To make your friends join from other networks, like their homes, you must forward port 9888 on your router and send them the public ip of server, but people on the same network as the Server will still use the local IP to join.
+
+**NOTE:** Server will only run on one machine, and players will only use the Game.java file to connect to the server and play the game.
+**NOTE:** Playing the game from multiple networks is still in progress as issues persist. In the meantime, players on local network can play without any issues.
 
 #### Troubleshooting and Errors
 If you receive an ArrayIndexOutOfBoundsException when you try to play, you will need to add the following vm arguments
@@ -33,11 +36,11 @@ If you receive an ArrayIndexOutOfBoundsException when you try to play, you will 
 --add-exports java.base/java.lang=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/sun.java2d=ALL-UNNAMED
 
 ## Licensing
-Our project is open-source, we believe that allowing the community to reuse our code, we can help individuals better understand key concepts in programming and potentially work on their own projects to create valuable software for people. Open Source helps the programming community by removing barriers between innovators. It promotes a free exchange of ideas within a community driven to learn and better themselves and the industry as a whole. If you want to add more features to the game, contact burkia@uwindsor.ca to get collobaration permission.
+Our project is open-source, we believe that allowing the community to reuse our code, we can help individuals better understand key concepts in programming and potentially work on their own projects to create valuable software for people. Open Source helps the programming community by removing barriers between innovators. It promotes a free exchange of ideas within a community driven to learn and better themselves and the industry as a whole. If you want to add more features to the game, contact Ali at burkia@uwindsor.ca to get collobaration permission.
 
 **Contribution**
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. If you have a suggestion that would make this better, please fork the repo and create a pull request.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. If you have a suggestion that would make this better, please email Ali at burkia@uwindsor.ca for collaboration permissions.
 
 **Licensed Libraries**
 ###### 1 - Java3D licensed under the GNU LGPL version 2.1 for public use.
@@ -47,6 +50,5 @@ Contributions are what make the open source community such an amazing place to l
 ## Roadmap
 ###### [ ] Work on procedurally generated mazes
 ###### [ ] Work on more than 9 players
-###### [ ] Prevent and handle server overloading
-###### [ ] Upgrade server to run on WAN.
+###### [ ] Prevent and handle server overloadingg
 ###### [ ] Work on different game modes
