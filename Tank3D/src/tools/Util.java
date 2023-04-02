@@ -3,26 +3,16 @@ package tools;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import org.jdesktop.j3d.examples.sound.BackgroundSoundBehavior;
 import org.jdesktop.j3d.examples.sound.PointSoundBehavior;
 import org.jdesktop.j3d.examples.sound.audio.JOALMixer;
-import org.jogamp.java3d.Appearance;
-import org.jogamp.java3d.BackgroundSound;
-import org.jogamp.java3d.BoundingSphere;
-import org.jogamp.java3d.BranchGroup;
-import org.jogamp.java3d.DirectionalLight;
-import org.jogamp.java3d.Material;
-import org.jogamp.java3d.MediaContainer;
-import org.jogamp.java3d.PointSound;
-import org.jogamp.java3d.Sound;
-import org.jogamp.java3d.Texture2D;
-import org.jogamp.java3d.TextureAttributes;
-import org.jogamp.java3d.Transform3D;
-import org.jogamp.java3d.TransformGroup;
+import org.jogamp.java3d.*;
 import org.jogamp.java3d.TransparencyAttributes;
 import org.jogamp.java3d.loaders.IncorrectFormatException;
 import org.jogamp.java3d.loaders.ParsingErrorException;
@@ -33,11 +23,7 @@ import org.jogamp.java3d.utils.geometry.Primitive;
 import org.jogamp.java3d.utils.image.TextureLoader;
 import org.jogamp.java3d.utils.universe.SimpleUniverse;
 import org.jogamp.java3d.utils.universe.Viewer;
-import org.jogamp.vecmath.Color3f;
-import org.jogamp.vecmath.Point3d;
-import org.jogamp.vecmath.Point3f;
-import org.jogamp.vecmath.Vector2f;
-import org.jogamp.vecmath.Vector3f;
+import org.jogamp.vecmath.*;
 
 import ECS.ESystem;
 import ECS.Entity;
@@ -113,6 +99,16 @@ public class Util {
         float dy = point1.y - point2.y;
         return (float) Math.sqrt(dx * dx + dy * dy);
     }
+
+	public static boolean isLocalIPAddress(String ipAddress) {
+		try {
+			return InetAddress.getByName(ipAddress).isSiteLocalAddress();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+    }
 	
 	public static void closeAudioDevice(SimpleUniverse su) {
 		su.getViewer().getPhysicalEnvironment().getAudioDevice().close();
@@ -121,11 +117,19 @@ public class Util {
 	public static Entity setupMaze(String filepath, TransformGroup sceneTG, ESystem eSystem) throws Exception {
 		BufferedImage img = ImageIO.read(new File(filepath));
 		Entity userTank = null;
+		float variation = -0.5f;
+
+		for (int y = -10; y < img.getHeight() + 10; y++) {
+			for (int x = -10; x < img.getWidth() + 10; x++) {
+				if (new Random().nextInt(28) == 1)
+					eSystem.addEntity(Entities.createFirefly(new Vector3f(x * 4,
+						(y < 0 || x < 0 || x >= img.getWidth() || y >= img.getHeight()) ? 16 : 2 - variation, y * 4), sceneTG));
+			}
+		}
+
 		for (int y = 0; y < img.getHeight(); y++) {
 			for (int x = 0; x < img.getWidth(); x++) {
 				int pixel = img.getRGB(x, y);
-
-				float variation = -0.5f;
 
 				int red = (pixel >> 16) & 255;
                 int green = (pixel >> 8) & 255;
@@ -134,9 +138,8 @@ public class Util {
 				if (red == 0 && green == 0 && blue == 0)
 					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
 				
-				if(red == 255 && green == 0 && blue == 0 && Game.room == null) {
+				if(red == 255 && green == 0 && blue == 0 && Game.room == null)
 					eSystem.addEntity(userTank = Entities.createUserTank(sceneTG, new Vector3f(x * 4, -1.4f, y * 4), TankColor.RED));
-				}
 				
 				if (red == 255 && green == 106 && blue == 0) {
 					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
@@ -162,9 +165,8 @@ public class Util {
 					eSystem.addEntity(Entities.createBarrels(sceneTG, new Vector3f(x * 4, -1, y * 4)));
 				}
 
-				if (red == 178 && green == 0 && blue == 255) {
+				if (red == 178 && green == 0 && blue == 255)
 					eSystem.addEntity(Entities.createPlantPot(sceneTG, new Vector3f(x * 4, -1.5f, y * 4)));
-				}
 
 				if (red == 0 && green == 255 && blue == 255) {
 					eSystem.addEntity(Entities.createBlock(sceneTG, new Vector3f(x * 4, 2 - variation, y * 4)));
@@ -211,6 +213,8 @@ public class Util {
 
 	public static Appearance createAppearance(Color3f diffuse, Color3f specular, Color3f emmissive, float shininess, TextureData texData) {
 		Material mtl = new Material();
+		mtl.setCapability(Material.ALLOW_COMPONENT_READ);
+		mtl.setCapability(Material.ALLOW_COMPONENT_WRITE);
 
 		mtl.setShininess(shininess);
 		mtl.setAmbientColor(BLACK);
@@ -220,6 +224,8 @@ public class Util {
 		mtl.setLightingEnable(true);
 
 		Appearance appearance = new Appearance();
+		appearance.setCapability(Appearance.ALLOW_MATERIAL_READ);
+		appearance.setCapability(Appearance.ALLOW_MATERIAL_WRITE);
 		appearance.setMaterial(mtl);
 
 		if (texData != null) {
@@ -263,6 +269,13 @@ public class Util {
 	public static float lerp(float start, float end, float t) {
         return start + t * (end - start);
     }
+
+	public static Color3f mix(Color3f start, Color3f end, float t) {
+	    float x = lerp(start.x, end.x, t);
+	    float y = lerp(start.y, end.y, t);
+	    float z = lerp(start.z, end.z, t);
+	    return new Color3f(x, y, z);
+	}
 
 	public static Vector3f lerp(Vector3f start, Vector3f end, float t) {
 	    float x = lerp(start.x, end.x, t);

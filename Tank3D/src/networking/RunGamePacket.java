@@ -31,7 +31,7 @@ public class RunGamePacket extends Packet {
 			tColors.add(TankColor.values()[i]);
 		}
 		
-		int mazeIndex = random.nextInt(4) + 1;
+		int mazeIndex = random.nextInt(5) + 1;
 		mazePNG = "res/mazes/maze-" + mazeIndex + ".png";
 		
 		BufferedImage img = null;

@@ -3,10 +3,13 @@ package networking;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.LinkedList;
 
 import javax.swing.JFrame;
@@ -20,7 +23,8 @@ import networking.Packet.ID;
 public class Server {
 
 	private DatagramSocket server;
-	private static String address = "";
+	private static String publicIP = "";
+	private static String localIP = "";
 	private static int port = 9888;
 	private static Font font = new Font("Consolas", Font.PLAIN, 13);
 
@@ -34,9 +38,15 @@ public class Server {
 
 	public Server() throws Exception {
 		server = new DatagramSocket(port);
-		address = InetAddress.getLocalHost().getHostAddress();
-		label.setText("Server listening on IP: " + address + " Port: " + port);
-		logln("Listening...");
+		URL whatIsMyIp = new URL("https://checkip.amazonaws.com");
+		BufferedReader in = new BufferedReader(new InputStreamReader(whatIsMyIp.openStream()));
+
+		publicIP =  in.readLine();
+		label.setText("Server listening on Port: " + port);
+		
+		localIP = InetAddress.getLocalHost().getHostAddress();
+		
+		logln("Local IP: " + localIP + ", Public IP: " + publicIP);
 		while (true) {
 			byte[] dataReceived = new byte[1024];
 			DatagramPacket dataPacket = new DatagramPacket(dataReceived, dataReceived.length);
@@ -156,7 +166,7 @@ public class Server {
 		contentPane.setLayout(null);
 
 		label.setFont(new Font("Calibri", Font.PLAIN, 14));
-		label.setBounds(new Rectangle(250, 10, 360, 32));
+		label.setBounds(new Rectangle(290, 10, 360, 32));
 
 		loading.setFont(new Font("Consolas", Font.BOLD, 12));
 		loading.setBounds(new Rectangle(365, 22, 360, 32));

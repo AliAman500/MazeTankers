@@ -36,7 +36,7 @@ public class Game extends JFrame {
 	public static LinkedList<String> leaderBoard = new LinkedList<String>();
 	
 	public static Thread clientThread;
-	public static Thread thread;
+	public Thread thread;
 
 	public static Thread uiThread;
 

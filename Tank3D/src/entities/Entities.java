@@ -15,6 +15,7 @@ import components.BoxCollider;
 import components.Bullet;
 import components.Camera;
 import components.CameraController;
+import components.Firefly;
 import components.Floor;
 import components.Forest;
 import components.GunRecoil;
@@ -49,8 +50,17 @@ public class Entities {
 	public static Entity createBackgroundEntity(TransformGroup sceneTG, Entity camera) {
 		Entity e = new Entity(sceneTG);
 		e.addComponent(new BackgroundEntity(camera, e));
-		Audio a = (Audio) e.addComponent(new Audio("res/audio/commandos-2.wav", 0.15f, -1, new Point3f(), 0, e));
-		a.play();
+		Audio a1 = (Audio) e.addComponent("audio1", new Audio("res/audio/backgrounds/ambience.wav", 0.08f, -1, new Point3f(), 0, e));
+		Audio a2 = (Audio) e.addComponent("audio2", new Audio("res/audio/backgrounds/crickets.wav", 0.15f, -1, new Point3f(), 0, e));
+		
+		a1.play();
+		a2.play();
+		return e;
+	}
+
+	public static Entity createFirefly(Vector3f position, TransformGroup sceneTG) {
+		Entity e = new Entity(sceneTG);
+		e.addComponent(new Firefly(position, e));
 		return e;
 	}
 

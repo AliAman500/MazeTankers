@@ -98,7 +98,7 @@ public class CameraController extends Component {
 			}
 
 			distance += moveSpeed * Mouse.getScroll();
-			distance = Util.clamp(distance, 100, 200);
+			distance = Util.clamp(distance, 70, 300);
 		} else {
 			offset.set(target.position);
 		}

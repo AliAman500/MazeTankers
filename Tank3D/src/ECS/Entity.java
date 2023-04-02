@@ -37,8 +37,13 @@ public class Entity {
         return c;
     }
 
-    public Component getComponent(String className) {
-        return components.get(className);
+    public Component addComponent(String cName, Component c) {
+        components.put(cName, c);
+        return c;
+    }
+    
+    public Component getComponent(String cName) {
+        return components.get(cName);
     }
 
     public void superUpdate() {

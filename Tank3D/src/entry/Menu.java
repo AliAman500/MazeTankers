@@ -10,7 +10,14 @@ import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -32,6 +39,7 @@ import com.formdev.flatlaf.FlatDarkLaf;
 import networking.Client;
 import networking.PlayReqPacket;
 import networking.User;
+import tools.Util;
 
 public class Menu extends JFrame {
 
@@ -49,7 +57,7 @@ public class Menu extends JFrame {
 
 	public static Clip bgClip;
 
-	public static String versionString = "Version 4.1.2 / 2023";
+	public static String versionString = "Version 1.0.0-2023";
 	public static JLabel iconLabelr;
 	
 	public Menu() {
@@ -107,7 +115,7 @@ public class Menu extends JFrame {
 		playButton.setBounds(new Rectangle(getWidth() / 2 - 150, (getHeight() / 2 + 48) + heightInc, 300, 46));
 		menuPanel.add(playButton);
 
-		JButton playSingleButton = new JButton("Single Player");
+		JButton playSingleButton = new JButton("Test (debugging)");
 		playSingleButton.setBounds(new Rectangle(getWidth() / 2 - 150, (getHeight() / 2 + 104) + heightInc, 300, 46));
 		menuPanel.add(playSingleButton);
 
@@ -209,6 +217,32 @@ public class Menu extends JFrame {
 		playButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Client.serverIP = ipField.getText();
+				if(!Util.isLocalIPAddress(Client.serverIP)) {
+					URL whatIsMyIp = null;
+					try {
+						whatIsMyIp = new URL("https://checkip.amazonaws.com");
+					} catch (MalformedURLException e1) {
+						e1.printStackTrace();
+					}
+					BufferedReader in = null;
+					try {
+						in = new BufferedReader(new InputStreamReader(whatIsMyIp.openStream()));
+					} catch (IOException e2) {
+						e2.printStackTrace();
+					}
+
+					try {
+						Game.client.clientAddress = in.readLine();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				} else {
+					try {
+						Game.client.clientAddress = InetAddress.getLocalHost().getHostAddress();
+					} catch (UnknownHostException e1) {
+						e1.printStackTrace();
+					}
+				}
 				Game.user = new User(uField.getText(), null, Game.client.clientAddress, Game.client.clientPort, null);
 				Game.user.username = Game.user.username.replaceAll("\\s+", "");
 				Game.client.sendData(new PlayReqPacket(Game.user.username));
@@ -237,7 +271,7 @@ public class Menu extends JFrame {
 				bgClip.stop();
 				dispose();
 			}
-		});
+		}, "Game-Starter-Thread");
 
 		getContentPane().add(roomPanel, "room");
 

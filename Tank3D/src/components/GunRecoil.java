@@ -4,7 +4,6 @@ import ECS.*;
 
 public class GunRecoil extends Component {
 	public float speed = 0.42f;
-	
 	private float x = 0;
 	private boolean playing = false;
 	

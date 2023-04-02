@@ -31,8 +31,7 @@ public class Client implements Runnable {
 	public static String serverIP = "192.168.2.35";
 	public InetAddress serverAddress;
 	public int serverPort;
-	public String deviceName;
-	public String clientAddress;
+	public String clientAddress = null;
 	public int clientPort;
 
 	public static JButton play = new JButton("Start Game!");
@@ -40,8 +39,7 @@ public class Client implements Runnable {
 	public Client() throws Exception {
 		client = new DatagramSocket();
 		serverPort = 9888;
-		deviceName = InetAddress.getLocalHost().getHostName();
-		clientAddress = InetAddress.getLocalHost().getHostAddress();
+		
 		clientPort = client.getLocalPort();
 	}
 
@@ -49,7 +47,6 @@ public class Client implements Runnable {
 		try {
 			serverAddress = InetAddress.getByName(serverIP);
 		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		DatagramPacket dataPacket = new DatagramPacket(packet.getData(), packet.length(), serverAddress, serverPort);
