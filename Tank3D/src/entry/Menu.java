@@ -59,7 +59,7 @@ public class Menu extends JFrame {
 
 	public static String versionString = "Version 1.0.0-2023";
 	public static JLabel iconLabelr;
-	
+
 	public Menu() {
 		super("Maze Tankers");
 		changeLookAndFeel();
@@ -68,7 +68,7 @@ public class Menu extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLayout(new CardLayout());
 		Image windowIcon = Toolkit.getDefaultToolkit().getImage("res/textures/icon.png");
-        setIconImage(windowIcon);
+		setIconImage(windowIcon);
 		try {
 			File soundFile = new File("res/audio/commandos_3.wav");
 			AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundFile);
@@ -143,25 +143,35 @@ public class Menu extends JFrame {
 
 		JCheckBox box = new JCheckBox("Music");
 		box.setSelected(true);
-		box.setBounds(new Rectangle(getWidth() - 80, getHeight() - 80, 100, 40));
+		box.setBounds(new Rectangle(getWidth() - 110, getHeight() - 80, 100, 40));
 		menuPanel.add(box);
-		
+
 		JCheckBox rbox = new JCheckBox("Music");
 		rbox.setSelected(box.isSelected());
 		rbox.setBounds(new Rectangle(getWidth() - 80, getHeight() - 80, 100, 40));
-		
-		box.addActionListener(new ActionListener() {
 
+		JCheckBox cbox = new JCheckBox("Lock camera");
+		cbox.setSelected(Game.lockCamera);
+		cbox.setBounds(new Rectangle(getWidth() - 110, getHeight() - 120, 100, 40));
+
+		box.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				rbox.setSelected(box.isSelected());
-				if(!box.isSelected()) {
-					bgClip.stop();					
+				if (!box.isSelected()) {
+					bgClip.stop();
 				} else {
 					bgClip.start();
 				}
 			}
-
 		});
+
+		cbox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Game.lockCamera = !Game.lockCamera;
+				cbox.setSelected(Game.lockCamera);
+			}
+		});
+		menuPanel.add(cbox);
 
 		ImageIcon icon = new ImageIcon("res/textures/menu.png");
 
@@ -169,7 +179,7 @@ public class Menu extends JFrame {
 		iconLabel.setBounds(new Rectangle(0, 0, 1136, 640));
 
 		menuPanel.add(iconLabel);
-		menuPanel.setComponentZOrder(iconLabel, 10);
+		menuPanel.setComponentZOrder(iconLabel, 11);
 		getContentPane().add(menuPanel, "menu");
 
 		roomPanel = new JPanel();
@@ -178,19 +188,19 @@ public class Menu extends JFrame {
 		versionR.setBounds(new Rectangle(10, (560), 300, 46));
 		roomPanel.add(versionR);
 		roomPanel.add(rbox);
-		
+
 		rbox.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if(!rbox.isSelected()) {
-					bgClip.stop();					
+				if (!rbox.isSelected()) {
+					bgClip.stop();
 				} else {
 					bgClip.start();
 				}
 			}
 
 		});
-		
+
 		String[] columnNames = { "Waiting for Players..." };
 		model = new DefaultTableModel(columnNames, 0);
 		table = new JTable(model);
@@ -199,7 +209,7 @@ public class Menu extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(table);
 		scrollPane.setBounds(new Rectangle(1136 / 2 - 200, 40, 400, 400));
 		roomPanel.add(scrollPane, BorderLayout.CENTER);
-		
+
 		startingGameLabel = new JLabel();
 		startingGameLabel.setFont(new Font("Calibri", Font.PLAIN, startingGameLabel.getFont().getSize()));
 		startingGameLabel.setBounds(new Rectangle(1136 / 2 - 40, 440 + 120, 100, 32));
@@ -210,38 +220,18 @@ public class Menu extends JFrame {
 		iconLabelr.setBounds(new Rectangle(0, 0, 1136, 640));
 
 		roomPanel.add(iconLabelr);
-		
+
 		roomPanel.add(startingGameLabel);
 		roomPanel.setComponentZOrder(iconLabelr, 4);
-		
+
 		playButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Client.serverIP = ipField.getText();
-				if(!Util.isLocalIPAddress(Client.serverIP)) {
-					URL whatIsMyIp = null;
-					try {
-						whatIsMyIp = new URL("https://checkip.amazonaws.com");
-					} catch (MalformedURLException e1) {
-						e1.printStackTrace();
-					}
-					BufferedReader in = null;
-					try {
-						in = new BufferedReader(new InputStreamReader(whatIsMyIp.openStream()));
-					} catch (IOException e2) {
-						e2.printStackTrace();
-					}
 
-					try {
-						Game.client.clientAddress = in.readLine();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-				} else {
-					try {
-						Game.client.clientAddress = InetAddress.getLocalHost().getHostAddress();
-					} catch (UnknownHostException e1) {
-						e1.printStackTrace();
-					}
+				try {
+					Game.client.clientAddress = InetAddress.getLocalHost().getHostAddress();
+				} catch (UnknownHostException e1) {
+					e1.printStackTrace();
 				}
 				Game.user = new User(uField.getText(), null, Game.client.clientAddress, Game.client.clientPort, null);
 				Game.user.username = Game.user.username.replaceAll("\\s+", "");
@@ -293,7 +283,7 @@ public class Menu extends JFrame {
 		roomPanel.revalidate();
 		roomPanel.repaint();
 	}
-	
+
 	public static void changeLookAndFeel() {
 		try {
 			UIManager.setLookAndFeel(new FlatDarkLaf());

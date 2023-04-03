@@ -120,10 +120,10 @@ public class Entities {
 		return e;
 	}
 
-	public static Entity createCamera(SimpleUniverse simpleUniverse, Tank userTank) {
+	public static Entity createCamera(SimpleUniverse simpleUniverse, Tank userTank, boolean lockCamera) {
 		Entity e = new Entity();
 		e.addComponent(new Camera(new Vector3f(0, 50, 0), new Vector3f(), 90, simpleUniverse, e));
-		e.addComponent(new CameraController(userTank, e));
+		e.addComponent(new CameraController(userTank, lockCamera, e));
 		return e;
 	}
 

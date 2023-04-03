@@ -25,15 +25,17 @@ public class CameraController extends Component {
 
 	private Vector3f offset;
 	private Vector3f rotOffset;
+	private boolean lockCamera;
 
 	private boolean activated = false;
 
 	public static boolean playerDied = false;
 
-	public CameraController(Tank target, Entity parent) {
+	public CameraController(Tank target, boolean lockCamera, Entity parent) {
 		super(parent);
 		camera = (Camera) parent.getComponent("Camera");
-
+		
+		this.lockCamera = lockCamera;
 		this.target = target;
 
 		offset = new Vector3f(target.position);
@@ -63,44 +65,55 @@ public class CameraController extends Component {
 		}
 	}
 
+	public void cameraMove() {
+		if (Mouse.isMiddleDown()) {
+			if (Keyboard.isLeftShiftDown()) {
+				Vector3f right = new Vector3f();
+				right.x = (float) Math.cos(Math.toRadians(camera.rotation.y));
+				right.z = (float) -Math.sin(Math.toRadians(camera.rotation.y));
+
+				Vector3f up = new Vector3f();
+				up.x = (float) (Math.sin(Math.toRadians(camera.rotation.x))
+						* Math.sin(Math.toRadians(camera.rotation.y)));
+				up.y = (float) Math.cos(Math.toRadians(camera.rotation.x));
+				up.z = (float) (Math.sin(Math.toRadians(camera.rotation.x))
+						* Math.cos(Math.toRadians(camera.rotation.y)));
+
+				offset.x -= right.x * (float) Mouse.getDelta().x * panSpeed * distance;
+				offset.y -= right.y * (float) Mouse.getDelta().x * panSpeed * distance;
+				offset.z -= right.z * (float) Mouse.getDelta().x * panSpeed * distance;
+
+				offset.x += up.x * (float) Mouse.getDelta().y * panSpeed * distance;
+				offset.y += up.y * (float) Mouse.getDelta().y * panSpeed * distance;
+				offset.z += up.z * (float) Mouse.getDelta().y * panSpeed * distance;
+			} else {
+				mouseOffset.y += Mouse.getDelta().x;
+				mouseOffset.x -= Mouse.getDelta().y;
+
+				if (lockCamera)
+					mouseOffset.x = Util.clamp(mouseOffset.x, -90, -10);
+			}
+		}
+
+		distance += moveSpeed * Mouse.getScroll();
+	}
+
 	public void update() {
 		rotOffset.x = (float) Math.toRadians(rotOffset.x - mouseOffset.x);
 		rotOffset.y = (float) Math.toRadians(rotOffset.y - mouseOffset.y);
 		rotOffset.z = (float) Math.toRadians(rotOffset.z);
 
-		if (playerDied) {
-			offset.set(new Vector3f(80, -1.4f, 80));
-			if (Mouse.isMiddleDown()) {
-				if (Keyboard.isLeftShiftDown()) {
-					Vector3f right = new Vector3f();
-					right.x = (float) Math.cos(Math.toRadians(camera.rotation.y));
-					right.z = (float) -Math.sin(Math.toRadians(camera.rotation.y));
-
-					Vector3f up = new Vector3f();
-					up.x = (float) (Math.sin(Math.toRadians(camera.rotation.x))
-							* Math.sin(Math.toRadians(camera.rotation.y)));
-					up.y = (float) Math.cos(Math.toRadians(camera.rotation.x));
-					up.z = (float) (Math.sin(Math.toRadians(camera.rotation.x))
-							* Math.cos(Math.toRadians(camera.rotation.y)));
-
-					offset.x -= right.x * (float) Mouse.getDelta().x * panSpeed * distance;
-					offset.y -= right.y * (float) Mouse.getDelta().x * panSpeed * distance;
-					offset.z -= right.z * (float) Mouse.getDelta().x * panSpeed * distance;
-
-					offset.x += up.x * (float) Mouse.getDelta().y * panSpeed * distance;
-					offset.y += up.y * (float) Mouse.getDelta().y * panSpeed * distance;
-					offset.z += up.z * (float) Mouse.getDelta().y * panSpeed * distance;
-				} else {
-					mouseOffset.y += Mouse.getDelta().x;
-					mouseOffset.x -= Mouse.getDelta().y;
-					mouseOffset.x = Util.clamp(mouseOffset.x, -90, -10);
-				}
-			}
-
-			distance += moveSpeed * Mouse.getScroll();
-			distance = Util.clamp(distance, 70, 300);
+		if (!lockCamera) {
+			cameraMove();
 		} else {
-			offset.set(target.position);
+			if (playerDied) {
+			offset.set(new Vector3f(80, -1.4f, 80));
+			cameraMove();
+			distance += moveSpeed * Mouse.getScroll();
+			distance = Util.clamp(distance, 100, 200);
+			} else {
+				offset.set(target.position);
+			}
 		}
 
 		if (!activated) {

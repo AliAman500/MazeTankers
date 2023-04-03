@@ -100,6 +100,17 @@ public class Server {
 				}
 				rooms.clear();
 				break;
+			case ROTATION:
+				RotationPacket rotPacket = (RotationPacket) packet;
+
+				for (int i = 0; i < rotPacket.users.size(); i++) {
+					User currentUser = rotPacket.users.get(i);
+					if (!currentUser.username.equals(rotPacket.username)) {
+						sendData(rotPacket, currentUser);
+					}
+				}
+
+				break;
 			case POSITION:
 				PositionPacket posPacket = (PositionPacket) packet;
 

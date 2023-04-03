@@ -124,6 +124,22 @@ public class Client implements Runnable {
 				Menu.roomPanel.repaint();
 				Menu.gameStarterThread.start();
 				break;
+			case ROTATION:
+				RotationPacket rotPacket = (RotationPacket) packet;
+				for (int i = 0; i < Game.eSystem.numEntities(); i++) {
+					Entity e = Game.eSystem.getEntity(i);
+					if(e != null) {
+						Tank tank = (Tank) e.getComponent("Tank");
+						if (tank != null) {
+							if (tank.username.equals(rotPacket.username)) {
+								NetworkTank netTank = (NetworkTank) e.getComponent("NetworkTank");
+								if (netTank != null)
+									netTank.rotPacket = rotPacket;
+							}
+						}
+					}
+				}
+				break;
 			case POSITION:
 				PositionPacket posPacket = (PositionPacket) packet;
 				for (int i = 0; i < Game.eSystem.numEntities(); i++) {
@@ -134,7 +150,7 @@ public class Client implements Runnable {
 							if (tank.username.equals(posPacket.username)) {
 								NetworkTank netTank = (NetworkTank) e.getComponent("NetworkTank");
 								if (netTank != null)
-									netTank.posPacket = posPacket;
+									netTank.tank.position = new Vector3f(posPacket.position);
 							}
 						}
 					}

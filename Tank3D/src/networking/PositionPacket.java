@@ -2,41 +2,27 @@ package networking;
 
 import java.util.LinkedList;
 
+import org.jogamp.vecmath.Vector3f;
+
 public class PositionPacket extends Packet {
 
-	public boolean forwards;
-	public boolean backwards;
-	public float direction;
-	public float turretDirection;
 	public String username;
-	
+	public Vector3f position;
 	public LinkedList<User> users = new LinkedList<User>();
 	
-	public PositionPacket(String username, boolean forwards, boolean backwards, float direction, float turretDirection, Room room) {
+	public PositionPacket(String username, Vector3f position, LinkedList<User> users) {
 		this.id = ID.POSITION;
-		this.username = username;
-		this.forwards = forwards;
-		this.backwards = backwards;
-		this.direction = direction;
-		this.turretDirection = turretDirection;
-		this.users = room.users;
-	}
-	
-	public PositionPacket(String username, boolean forwards, boolean backwards, float direction, float turretDirection, LinkedList<User> users) {
-		this.username = username;
-		this.id = ID.POSITION;
-		this.forwards = forwards;
-		this.backwards = backwards;
-		this.direction = direction;
-		this.turretDirection = turretDirection;
+		this.position = position;
 		this.users = users;
+		this.username = username;
 	}
 	
 	public byte[] getData() {
-		String data = id.name() + " " + username + " " + forwards + " " + backwards + " " + direction + " " + turretDirection;
+		String data = id.name() + " " + username + " " + position.x + " " + position.y + " " + position.z;
 		for(User user : users) {
 			data += " " + user.username + " " + user.tColor + " " + user.ipAddress + " " + user.port + " " + user.position.x + " " + user.position.y + " " + user.position.z;
 		}
 		return data.getBytes();
 	}
+	
 }

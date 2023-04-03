@@ -12,7 +12,7 @@ public class Packet {
 	public ID id;
 	
 	public enum ID {
-		PLAY_REQUEST, CREATE_ROOM, JOIN_ROOM, RUN_GAME, POSITION, BULLET;
+		PLAY_REQUEST, CREATE_ROOM, JOIN_ROOM, RUN_GAME, ROTATION, POSITION, BULLET;
 	}
 	
 	public static Packet parse(DatagramPacket dataPacket) {
@@ -47,7 +47,7 @@ public class Packet {
 				users.add(new User(data[i], TankColor.valueOf(data[i+1]), data[i+2], Integer.parseInt(data[i+3]), pos));
 			}
 			return new RunGamePacket(ID.RUN_GAME, users, data[1]);
-		case POSITION:
+		case ROTATION:
 			users = new LinkedList<User>();
 			for(int i = 6; i < data.length; i += 7) {
 				Vector3f pos = new Vector3f();
@@ -56,7 +56,17 @@ public class Packet {
 				pos.z = Float.parseFloat(data[i+6]);
 				users.add(new User(data[i], TankColor.valueOf(data[i + 1]), data[i+2], Integer.parseInt(data[i+3]), pos));
 			}
-			return new PositionPacket(data[1], Boolean.parseBoolean(data[2]), Boolean.parseBoolean(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]), users);
+			return new RotationPacket(data[1], Boolean.parseBoolean(data[2]), Boolean.parseBoolean(data[3]), Float.parseFloat(data[4]), Float.parseFloat(data[5]), users);
+		case POSITION:
+			users = new LinkedList<User>();
+			for(int i = 5; i < data.length; i += 7) {
+				Vector3f pos = new Vector3f();
+				pos.x = Float.parseFloat(data[i+4]);
+				pos.y = Float.parseFloat(data[i+5]);
+				pos.z = Float.parseFloat(data[i+6]);
+				users.add(new User(data[i], TankColor.valueOf(data[i + 1]), data[i+2], Integer.parseInt(data[i+3]), pos));
+			}
+			return new PositionPacket(data[1], new Vector3f(Float.parseFloat(data[2]), Float.parseFloat(data[3]), Float.parseFloat(data[4])), users);
 		case BULLET:
 			users = new LinkedList<User>();
 			for(int i = 6; i < data.length; i += 3) {

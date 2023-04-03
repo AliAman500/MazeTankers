@@ -3,13 +3,13 @@ package components;
 import ECS.Component;
 import ECS.Entity;
 import entry.Game;
-import networking.PositionPacket;
+import networking.RotationPacket;
 import tools.Util;
 
 public class NetworkTank extends Component {
 
-	private Tank tank;
-	public PositionPacket posPacket;
+	public Tank tank;
+	public RotationPacket rotPacket;
 
 	private float velocity = 0;
 	private float speed = 0.17f;
@@ -27,10 +27,10 @@ public class NetworkTank extends Component {
 	public void update() {
 		// control tank:
 		if (!tank.die) {
-			if (posPacket != null) {
-				if (posPacket.forwards)
+			if (rotPacket != null) {
+				if (rotPacket.forwards)
 					velocity = Util.lerp(velocity, speed, smoothness);
-				else if (posPacket.backwards)
+				else if (rotPacket.backwards)
 					velocity = Util.lerp(velocity, -speed, smoothness);
 				else
 					velocity = Util.lerp(velocity, 0, smoothness);
@@ -61,8 +61,8 @@ public class NetworkTank extends Component {
 					}
 				}
 
-				tank.direction = posPacket.direction;
-				tank.turretDirection = posPacket.turretDirection;
+				tank.direction = rotPacket.direction;
+				tank.turretDirection = rotPacket.turretDirection;
 				tank.position.x += velocity * Math.cos(Math.toRadians(tank.direction + 90));
 				tank.position.z -= velocity * Math.sin(Math.toRadians(tank.direction + 90));
 			}

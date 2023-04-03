@@ -12,6 +12,7 @@ import input.Keyboard;
 import input.Mouse;
 import networking.BulletPacket;
 import networking.PositionPacket;
+import networking.RotationPacket;
 import tools.Util;
 
 public class PlayerController extends Component {
@@ -35,6 +36,8 @@ public class PlayerController extends Component {
 	public boolean startCooldown = false;
 	private boolean forwards = false;
 	private boolean backwards = false;
+	
+	public int posCounter = 0;
 	
 	public PlayerController(Entity parent) {
 		super(parent);
@@ -128,8 +131,15 @@ public class PlayerController extends Component {
 			}
 
 			if (Game.room != null) {
-				PositionPacket posPacket = new PositionPacket(Game.user.username, forwards, backwards, tank.direction, tank.turretDirection, Game.room);
-				Game.client.sendData(posPacket);
+				RotationPacket rotPacket = new RotationPacket(Game.user.username, forwards, backwards, tank.direction, tank.turretDirection, Game.room);
+				Game.client.sendData(rotPacket);
+				
+				posCounter++;
+				if(posCounter % 10 == 0) {
+					PositionPacket posPacket = new PositionPacket(Game.user.username, tank.position, Game.room.users);
+					Game.client.sendData(posPacket);
+					posCounter = 0;
+				}
 			}
 		}
 	}

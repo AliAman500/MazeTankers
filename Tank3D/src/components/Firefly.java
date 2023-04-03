@@ -16,7 +16,7 @@ public class Firefly extends Component {
     private Vector3f position;
     private Material mtl;
     float elapsedTime = 0;
-    float frequency;
+    float power;
     float speed;
     float radius;
     private float initialOpacity;
@@ -37,7 +37,7 @@ public class Firefly extends Component {
         randomDirs.y = new Random().nextBoolean() ? 1 : -1;
         randomDirs.z = new Random().nextBoolean() ? 1 : -1;
         
-        frequency = 6;
+        power = 6;
         speed = 0.03f * new Random().nextFloat();
         initialOpacity = new Random().nextFloat();
         radius = 0.04f;
@@ -57,7 +57,7 @@ public class Firefly extends Component {
         elapsedTime += speed;
 
         // firefly movement:
-        float opacity = (float) Math.pow(Math.sin(elapsedTime + initialOpacity), frequency);
+        float opacity = (float) Math.pow(Math.sin(elapsedTime + initialOpacity), power);
         float angle = elapsedTime;
         
         float x = position.x + radius * (float) Math.sin(randomDirs.x * angle + randomAngles.x);
@@ -67,7 +67,7 @@ public class Firefly extends Component {
         position.set(x, y, z);
 
         mtl.setDiffuseColor(Util.mix(Util.BLACK, Util.WHITE, opacity));
-        mtl.setEmissiveColor(Util.mix(Util.BLACK, Util.WHITE, opacity));;
+        mtl.setEmissiveColor(Util.mix(Util.BLACK, Util.WHITE, opacity));
         parent.entityTransform.setTranslation(position);
 		parent.superUpdate();
     }

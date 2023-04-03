@@ -33,6 +33,7 @@ public class Game extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	public static Client client;
+	public static boolean lockCamera = true;
 	public static LinkedList<String> leaderBoard = new LinkedList<String>();
 	
 	public static Thread clientThread;
@@ -83,7 +84,7 @@ public class Game extends JFrame {
 
 		userTank = setupUserMaze(sceneTG);
 		
-		Entity c = eSystem.addEntity(Entities.createCamera(simpleUniverse, (Tank) userTank.getComponent("Tank")));
+		Entity c = eSystem.addEntity(Entities.createCamera(simpleUniverse, (Tank) userTank.getComponent("Tank"), lockCamera));
 		eSystem.addEntity(Entities.createBackgroundEntity(sceneTG, c));
 		cc = (CameraController) c.getComponent("CameraController");
 		eSystem.addEntity(Entities.createSkybox(c, sceneTG));
